@@ -28,6 +28,16 @@ echo %TAB%define %constantName%
 set "%constantName%=FALSE"
 
 
+set constantName=SLASH
+echo %TAB%define %constantName%
+set "%constantName%=/"
+
+
+set constantName=BACKSLASH
+echo %TAB%define %constantName%
+set "%constantName%=\"
+
+
 set __CONSTANTS__=loaded
 goto END
 
