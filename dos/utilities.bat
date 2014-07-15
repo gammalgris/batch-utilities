@@ -53,6 +53,7 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0 > nul
 )
 
 set batchName=%0
+set fullBatchPath=%~dpnx0
 set subroutineName=%1
 shift
 
@@ -71,6 +72,36 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===   2) http://www.dostips.com/DtTipsStringManipulation.php
 @rem ===   3) http://ss64.com/nt/delayedexpansion.html
 @rem ===
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void listSubroutines()
+@rem ---
+@rem ---   Lists all subroutines which are defined within this utility library.
+@rem ---
+@rem ---   See
+@rem ---   1) http://stackoverflow.com/questions/10960467/windows-batch-delayed-expansion-in-a-for-loop
+@rem ---
+
+:PUBLIC_listSubroutines
+
+	for /f "delims=*" %%A in ('findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%" %fullBatchPath% 2^>nul ^| sort') do (
+
+		set "name=%%A"
+
+		setlocal EnableDelayedExpansion
+
+			set "name=!name:%PUBLIC_LABEL_PREFIX%=!"
+			echo !name!
+
+		endlocal
+		
+		set name=
+	)
+
+goto END
+
 
 @rem --------------------------------------------------------------------------------
 @rem ---
@@ -446,6 +477,7 @@ goto END
 	set PUBLIC_LABEL_PREFIX=
 
 	set batchName=
+	set fullBatchPath=
 	set subroutineName=
 
 goto:eof
