@@ -93,7 +93,7 @@ goto %PUBLIC_PREFIX%%subroutineName%
 		setlocal EnableDelayedExpansion
 
 			set "name=!name:%PUBLIC_LABEL_PREFIX%=!"
-			echo !name!
+			!cprintln! !name!
 
 		endlocal
 		
