@@ -76,8 +76,8 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ---
 @rem ---   void today(String datePattern)
 @rem ---
-@rem ---   A subroutine which prints the current date according to the specified
-@rem ---   date pattern.
+@rem ---   A subroutine which prints the current date to the console according to
+@rem ---   the specified date pattern.
 @rem ---
 @rem ---   Supported patterns:
 @rem ---
@@ -88,13 +88,12 @@ goto %PUBLIC_PREFIX%%subroutineName%
 
 :PUBLIC_today
 
-	set input=%1
-	set "input=%input:"=%"
+	set "input=%1"
+	if '%input%'=='' (
 
-	if "%input%"=="" (
-	
 		goto MISSING_PARAMETER_ERROR
 	)
+	set "input=%input:"=%"
 
 	set YEAR_PATTERN=yyyy
 	set MONTH_PATTERN=MM
@@ -130,8 +129,8 @@ goto END
 @rem ---
 @rem ---   void now(String timePattern)
 @rem ---
-@rem ---   A subroutine which prints the current time according to the specified
-@rem ---   time pattern.
+@rem ---   A subroutine which prints the current time to the console according to
+@rem ---   the specified time pattern.
 @rem ---
 @rem ---   Supported patterns:
 @rem ---
@@ -143,13 +142,12 @@ goto END
 
 :PUBLIC_now
 
-	set input=%1
-	set "input=%input:"=%"
-
-	if "%input%"=="" (
+	set "input=%1"
+	if '%input%'=='' (
 	
 		goto MISSING_PARAMETER_ERROR
 	)
+	set "input=%input:"=%"
 
 	set HOUR_PATTERN=HH
 	set MINUTE_PATTERN=mm
@@ -166,15 +164,16 @@ goto END
 			set fraction=%%l
 		)
 
-	setlocal EnableDelayedExpansion
+		setlocal EnableDelayedExpansion
 
-		set "output=!input!"
-		set "output=!output:%HOUR_PATTERN%=%hours%!"
-		set "output=!output:%MINUTE_PATTERN%=%minutes%!"
-		set "output=!output:%SECOND_PATTERN%=%seconds%!"
-		set "output=!output:%FRACTION_PATTERN%=%fraction%!"
+			set "output=!input!"
+			set "output=!output:%HOUR_PATTERN%=%hours%!"
+			set "output=!output:%MINUTE_PATTERN%=%minutes%!"
+			set "output=!output:%SECOND_PATTERN%=%seconds%!"
+			set "output=!output:%FRACTION_PATTERN%=%fraction%!"
 
-	endlocal & %cprintln% %output%
+		endlocal & %cprintln% %output%
+
 	endlocal
 
 	set input=
@@ -189,24 +188,24 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void findFiles(String baseDirectory, String fileName)
+@rem ---   void findFile(String baseDirectory, String fileName)
 @rem ---
-@rem ---   A subroutine which looks for the specified files at the specified
-@rem ---   location.
+@rem ---   A subroutine which looks for files with the specified name at the
+@rem ---   specified location and prints a list of matching files to the console.
 @rem ---
 @rem ---   See
 @rem ---   1) http://stackoverflow.com/questions/12712905/how-to-check-if-the-user-input-ends-with-a-specific-string-in-batch-bat-scrip
 @rem ---
 
-:PUBLIC_findFiles
+:PUBLIC_findFile
 
-	set baseDirectory=%1
-	set "baseDirectory=%baseDirectory:"=%"
-
-	if "%baseDirectory%"=="" (
+	set "baseDirectory=%1"
+	if '%baseDirectory%'=='' (
 	
 		goto MISSING_BASE_DIRECTORY_ERROR
 	)
+	set "baseDirectory=%baseDirectory:"=%"
+
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
 
@@ -214,16 +213,15 @@ goto END
 	)
 
 
-	set fileName=%2
-	set "fileName=%fileName:"=%"
-
-	if "%fileName%"=="" (
+	set "fileName=%2"
+	if '%fileName%'=='' (
 	
 		goto MISSING_FILE_NAME_ERROR
 	)
+	set "fileName=%fileName:"=%"
 
 
-	for /f "delims=*" %%A in ('dir /A-D /B /S "%baseDirectory%%fileName%" ^| sort') do (
+	for /f "delims=*" %%A in ('dir /A-D /B /S "%baseDirectory%%fileName%" 2^>nul ^| sort') do (
 
 		%cprintln% %%A
 	)
@@ -231,6 +229,145 @@ goto END
 
 	set baseDirectory=
 	set fileName=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void findFileSets(String baseDirectory, String filePatterns)
+@rem ---
+@rem ---   A subroutine which looks for files which match the specified pattern name
+@rem ---   at the specified location and prints a list of matching files to the
+@rem ---   console.
+@rem ---
+@rem ---   A file pattern is provided as a quoted list (e.g. ".pdf .txt .csv").
+@rem ---
+
+:PUBLIC_findFileSets
+
+	set baseDirectory=%1
+	if '%baseDirectory%'=='' (
+	
+		goto MISSING_BASE_DIRECTORY_ERROR
+	)
+	set "baseDirectory=%baseDirectory:"=%"
+
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+
+	set filePatterns=%2
+	if '%filePatterns%'=='' (
+	
+		goto MISSING_FILE_PATTERNS_ERROR
+	)
+	set "filePatterns=%filePatterns:"=%"
+
+
+	for %%i in (%filePatterns%) do (
+
+		call utilities.bat findFile "%baseDirectory%" "*%%i"
+	)
+
+
+	set baseDirectory=
+	set filePatterns=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void findDirectory(String baseDirectory, String directoryName)
+@rem ---
+@rem ---   A subroutine which looks for directories with the specified name at the
+@rem ---   specified location and prints a list of matching directories to the
+@rem ---   console.
+@rem ---
+
+:PUBLIC_findDirectory
+
+	set "baseDirectory=%1"
+	if '%baseDirectory%'=='' (
+	
+		goto MISSING_BASE_DIRECTORY_ERROR
+	)
+	set "baseDirectory=%baseDirectory:"=%"
+
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+
+	set "directoryName=%2"
+	if '%directoryName%'=='' (
+	
+		goto MISSING_DIRECTORY_NAME_ERROR
+	)
+	set "directoryName=%directoryName:"=%"
+
+
+	for /f "delims=*" %%A in ('dir /A-D /B /S "%baseDirectory%%fileName%" 2^>nul ^| sort') do (
+
+		%cprintln% %%A
+	)
+
+
+	set baseDirectory=
+	set directoryName=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void findDirectorySets(String baseDirectory, String directoryPatterns)
+@rem ---
+@rem ---   A subroutine which looks for directories which match the specified pattern
+@rem ---   at the specified location and prints a list of matching files to the
+@rem ---   console.
+@rem ---
+@rem ---   A directory pattern is provided as a quoted list (e.g. "test1 test2").
+@rem ---
+
+:PUBLIC_findDirectorySets
+
+	set baseDirectory=%1
+	if '%baseDirectory%'=='' (
+	
+		goto MISSING_BASE_DIRECTORY_ERROR
+	)
+	set "baseDirectory=%baseDirectory:"=%"
+
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+
+	set directoryPatterns=%2
+	if '%directoryPatterns%'=='' (
+	
+		goto MISSING_FILE_PATTERNS_ERROR
+	)
+	set "directoryPatterns=%directoryPatterns:"=%"
+
+
+	for %%i in (%directoryPatterns%) do (
+
+		call utilities.bat findDirectory "%baseDirectory%" "*%%i"
+	)
+
+
+	set baseDirectory=
+	set directoryPatterns=
 
 goto END
 
@@ -251,13 +388,12 @@ goto END
 
 :PUBLIC_checkFile
 
-	set fullPath=%1
-	set "fullPath=%fullPath:"=%"
-
-	if "%fullPath%"=="" (
+	set "fullPath=%1"
+	if '%fullPath%'=='' (
 	
 		goto MISSING_PATH_ERROR
 	)
+	set "fullPath=%fullPath:"=%"
 
 
 	if not exist "%fullPath%" (
@@ -378,7 +514,7 @@ exit /b 5
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A subroutine expects a parameter but none wasn't specified.
+@rem ---   A subroutine expects a parameter but none was specified.
 @rem ---
 
 :MISSING_PARAMETER_ERROR
@@ -391,7 +527,7 @@ exit /b 6
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A subroutine expects a directory but none wasn't specified.
+@rem ---   A subroutine expects a directory but none was specified.
 @rem ---
 
 :MISSING_BASE_DIRECTORY_ERROR
@@ -404,7 +540,7 @@ exit /b 7
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A subroutine expects a file name but none wasn't specified.
+@rem ---   A subroutine expects a file name but none was specified.
 @rem ---
 
 :MISSING_FILE_NAME_ERROR
@@ -417,7 +553,20 @@ exit /b 8
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A subroutine expects a path but none wasn't specified.
+@rem ---   A subroutine expects a file pattern but none was specified.
+@rem ---
+
+:MISSING_FILE_PATTERNS_ERROR
+
+echo Error: The subroutine with the name "%0" expects a file pattern but none was specified!
+call:cleanUp
+
+exit /b 9
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a path but none was specified.
 @rem ---
 
 :MISSING_PATH_ERROR
@@ -425,7 +574,20 @@ exit /b 8
 echo Error: The subroutine with the name "%0" expects a path but none was specified!
 call:cleanUp
 
-exit /b 9
+exit /b 10
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a path but none was specified.
+@rem ---
+
+:MISSING_DIRECTORY_NAME_ERROR
+
+echo Error: The subroutine with the name "%0" expects a directory name but none was specified!
+call:cleanUp
+
+exit /b 11
 
 
 @rem ================================================================================
