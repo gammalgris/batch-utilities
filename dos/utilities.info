@@ -1,0 +1,175 @@
+
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines Lists all subroutines which are defined within this utility library.
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Syntax:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}{batch-name} listSubroutines
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Parameters:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}none
+:PUBLIC_listSubroutines 
+
+
+:PUBLIC_info 
+:PUBLIC_info Prints the info screen for the specified subroutine.
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Syntax:
+:PUBLIC_info 
+:PUBLIC_info {tab}{batch-name} info [subroutine]
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Parameters:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}[subroutine]{tab}the name of a subroutine
+:PUBLIC_info 
+
+
+:PUBLIC_today 
+:PUBLIC_today A subroutine which prints the current date to the console according to
+:PUBLIC_today the specified date pattern.
+:PUBLIC_today 
+:PUBLIC_today {tab}Supported patterns:
+:PUBLIC_today 
+:PUBLIC_today {tab}{tab}yyyy{tab}Year
+:PUBLIC_today {tab}{tab}MM{tab}Month in year
+:PUBLIC_today {tab}{tab}dd{tab}Day in year
+:PUBLIC_today 
+:PUBLIC_today 
+:PUBLIC_today {tab}Syntax:
+:PUBLIC_today 
+:PUBLIC_today {tab}{tab}{batch-name} today [datePattern]
+:PUBLIC_today 
+:PUBLIC_today 
+:PUBLIC_today {tab}Parameters:
+:PUBLIC_today 
+:PUBLIC_today {tab}{tab}[datePattern]{tab}a string which contains a date pattern. If the string
+:PUBLIC_today {tab}{tab}             {tab}contains spaces then it should be surrounded with quotes.
+:PUBLIC_today 
+
+
+:PUBLIC_now 
+:PUBLIC_now A subroutine which prints the current time to the console according to
+:PUBLIC_now the specified time pattern.
+:PUBLIC_now 
+:PUBLIC_now Supported patterns:
+:PUBLIC_now 
+:PUBLIC_now {tab}HH{tab}Hour in day (0-23)
+:PUBLIC_now {tab}mm{tab}Minute in hour
+:PUBLIC_now {tab}ss{tab}Second in minute
+:PUBLIC_now {tab}ff{tab}seconds fraction
+:PUBLIC_now 
+:PUBLIC_now 
+:PUBLIC_now {tab}Syntax:
+:PUBLIC_now 
+:PUBLIC_now {tab}{tab}{batch-name} now [timePattern]
+:PUBLIC_now 
+:PUBLIC_now 
+:PUBLIC_now {tab}Parameters:
+:PUBLIC_now 
+:PUBLIC_now {tab}{tab}[timePattern]{tab}a string which contains a time pattern. If the string
+:PUBLIC_now {tab}{tab}             {tab}contains spaces then it should be surrounded with quotes.
+:PUBLIC_now 
+
+
+:PUBLIC_findFile 
+:PUBLIC_findFile A subroutine which looks for files with the specified name at the
+:PUBLIC_findFile specified location and prints a list of matching files to the console.
+:PUBLIC_findFile 
+:PUBLIC_findFile 
+:PUBLIC_findFile {tab}Syntax:
+:PUBLIC_findFile 
+:PUBLIC_findFile {tab}{tab}{batch-name} findFile [baseDirectory] [fileName]
+:PUBLIC_findFile 
+:PUBLIC_findFile 
+:PUBLIC_findFile {tab}Parameters:
+:PUBLIC_findFile 
+:PUBLIC_findFile {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_findFile {tab}{tab}               {tab}file
+:PUBLIC_findFile 
+:PUBLIC_findFile {tab}{tab}[fileName]{tab}{tab}the file name to look for
+:PUBLIC_findFile 
+
+
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets A subroutine which looks for files which match the specified pattern name
+:PUBLIC_findFileSets at the specified location and prints a list of matching files to the
+:PUBLIC_findFileSets console.
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets A set of file patterns is provided as a quoted list (e.g. ".pdf .txt .csv").
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets {tab}Syntax:
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets {tab}{tab}{batch-name} findFileSets [baseDirectory] [filePatterns]
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets {tab}Parameters:
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_findFileSets {tab}{tab}               {tab}file
+:PUBLIC_findFileSets 
+:PUBLIC_findFileSets {tab}{tab}[filePatterns]{tab}a list of file patterns
+:PUBLIC_findFileSets 
+
+
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory A subroutine which looks for directories with the specified name at the
+:PUBLIC_findDirectory specified location and prints a list of matching directories to the
+:PUBLIC_findDirectory console.
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory {tab}Syntax:
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory {tab}{tab}{batch-name} findDirectory [baseDirectory] [directoryName]
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory {tab}Parameters:
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_findDirectory {tab}{tab}               {tab}file
+:PUBLIC_findDirectory 
+:PUBLIC_findDirectory {tab}{tab}[directoryName]{tab}the directory to look for
+:PUBLIC_findDirectory 
+
+
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets A subroutine which looks for directories which match the specified pattern
+:PUBLIC_findDirectorySets at the specified location and prints a list of matching files to the
+:PUBLIC_findDirectorySets console.
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets A set of directory patterns is provided as a quoted list (e.g. "test1 test2").
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets {tab}Syntax:
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets {tab}{tab}{batch-name} findDirectorySets [baseDirectory] [directoryPatterns]
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets {tab}Parameters:
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_findDirectorySets {tab}{tab}               {tab}file
+:PUBLIC_findDirectorySets 
+:PUBLIC_findDirectorySets {tab}{tab}[directoryPatterns]{tab}a list of directory patterns
+:PUBLIC_findDirectorySets 
+
+
+:PUBLIC_checkFile 
+:PUBLIC_checkFile A subroutine which checks if the specified path represents a file or
+:PUBLIC_checkFile directory. The result is printed to the console.
+:PUBLIC_checkFile 
+:PUBLIC_checkFile 
+:PUBLIC_checkFile {tab}Syntax:
+:PUBLIC_checkFile 
+:PUBLIC_checkFile {tab}{tab}{batch-name} checkFile [fullPath]
+:PUBLIC_checkFile 
+:PUBLIC_checkFile 
+:PUBLIC_checkFile {tab}Parameters:
+:PUBLIC_checkFile 
+:PUBLIC_checkFile {tab}{tab}[fullPath]{tab}a full path that either represents a file or
+:PUBLIC_checkFile {tab}{tab}          {tab}directory.
+:PUBLIC_checkFile 

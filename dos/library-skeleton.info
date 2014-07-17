@@ -1,0 +1,43 @@
+
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines Lists all subroutines which are defined within this utility library.
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Syntax:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}{batch-name} listSubroutines
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Parameters:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}none
+:PUBLIC_listSubroutines 
+
+
+:PUBLIC_info 
+:PUBLIC_info Prints the info screen for the specified subroutine.
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Syntax:
+:PUBLIC_info 
+:PUBLIC_info {tab}{batch-name} info [subroutine]
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Parameters:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}[subroutine]{tab}the name of a subroutine
+:PUBLIC_info 
+
+
+:PUBLIC_test 
+:PUBLIC_test A test method.
+:PUBLIC_test 
+:PUBLIC_test {tab}Syntax:
+:PUBLIC_test 
+:PUBLIC_test {tab}{tab}{batch-name} test
+:PUBLIC_test 
+:PUBLIC_test 
+:PUBLIC_test {tab}Parameters:
+:PUBLIC_test 
+:PUBLIC_test {tab}{tab}none
+:PUBLIC_test 

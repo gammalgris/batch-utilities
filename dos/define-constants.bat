@@ -13,9 +13,19 @@ echo execute %~n0...
 @rem ===   Declarations of various constants.
 @rem ===
 
+set constantName=SPACE
+echo     define %constantName%
+set "%constantName%= "
+
+
 set constantName=TAB
 echo     define %constantName%
-set "%constantName%=    "
+set "%constantName%=%SPACE%%SPACE%%SPACE%%SPACE%"
+
+
+set constantName=TABULATOR
+echo     define %constantName%
+set "%constantName%=%TAB%"
 
 
 set constantName=TRUE

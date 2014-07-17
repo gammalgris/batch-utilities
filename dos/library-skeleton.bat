@@ -52,8 +52,11 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 	goto INVALID_SUBROUTINE_ERROR
 )
 
+set INFO_FILE_SUFFIX=.info
+
 set batchName=%0
 set fullBatchPath=%~dpnx0
+set infoFile=%~dp0%0%INFO_FILE_SUFFIX%
 set subroutineName=%1
 shift
 
@@ -71,6 +74,9 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===   1) http://www.robvanderwoude.com/escapechars.php
 @rem ===   2) http://www.dostips.com/DtTipsStringManipulation.php
 @rem ===   3) http://ss64.com/nt/delayedexpansion.html
+@rem ===   4) http://stackoverflow.com/questions/3215501/batch-remove-file-extension
+@rem ===   5) http://stackoverflow.com/questions/17063947/get-current-batchfile-directory
+@rem ===   6) http://stackoverflow.com/questions/8797983/can-a-dos-batch-file-determine-its-own-file-name
 @rem ===
 
 @rem --------------------------------------------------------------------------------
@@ -98,6 +104,58 @@ goto %PUBLIC_PREFIX%%subroutineName%
 		
 		set name=
 	)
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void info(String subroutine)
+@rem ---
+@rem ---   Prints the info screen for the specified subroutine.
+@rem ---
+
+:PUBLIC_info
+
+	set "subroutine=%1"
+	if '%subroutine%'=='' (
+
+		goto MISSING_PARAMETER_ERROR
+	)
+	set "subroutine=%subroutine:"=%"
+
+	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutine%%SPACE%"
+	set BATCH_NAME_PATTERN={batch-name}
+	set TABULATOR_PATTERN={tab}
+
+
+	setlocal EnableDelayedExpansion
+
+		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" %infoFile% 2^>nul') do (
+
+			set "line=%%A"
+			set "line=!line:%prefix%=!"
+
+			if '!line!'=='' (
+
+				@rem do nothing
+
+			) else (
+
+				set "line=!line:%TABULATOR_PATTERN%=%TABULATOR%!"
+				set "line=!line:%BATCH_NAME_PATTERN%=%batchName%!"
+			)
+
+			!cprintln!.!line!
+		)
+
+	endlocal
+
+
+	set BATCH_NAME_PATTERN=
+
+	set prefix=
+	set subroutine=
 
 goto END
 
@@ -136,9 +194,11 @@ goto END
 	set LABEL_PREFIX=
 	set PUBLIC_PREFIX=
 	set PUBLIC_LABEL_PREFIX=
+	set INFO_FILE_SUFFIX=
 
 	set batchName=
 	set fullBatchPath=
+	set infoFile=
 	set subroutineName=
 
 goto:eof
