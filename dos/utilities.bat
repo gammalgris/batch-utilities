@@ -547,7 +547,7 @@ goto:eof
 @rem ===
 @rem ===   Error Handling
 @rem ===
-@rem ===   User defined errors should have an error code > 2 in order to distinguish
+@rem ===   User defined errors should have an error code > 1 in order to distinguish
 @rem ===   them from unforeseen errors.
 @rem ===
 
