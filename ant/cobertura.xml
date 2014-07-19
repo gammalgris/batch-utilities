@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="junit" basedir=".">
+
+    <include file="common.xml" />
+
+    <property name="remabs.tests.dir" location="${remabs.project.dir}\Tests" />
+    <property name="remabs.tests.src" location="${remabs.tests.dir}\src" />
+
+    <property name="analysis.dir" location="${user.dir}" />
+    <property name="analysis.config" location="${analysis.dir}\config" />
+
+    <property name="tests.dir" location="${analysis.dir}\cobertura" />
+
+    <property name="tests.src" location="${tests.dir}\src" />
+    <property name="tests.build" location="${tests.dir}\classes" />
+    <property name="tests.report" location="${tests.dir}\report" />
+    <property name="tests.report2" location="${tests.dir}\report2" />
+    <property name="tests.libs" location="${tests.dir}\libs" />
+    <property name="tests.config" location="${tests.dir}\config" />
+
+
+    <property name="instrumented.dir" value="${tests.dir}\instrumented" />
+    <property name="cobertura.dir" value="${analysis.dir}\cobertura-2.0.3" />
+    <property name="cobertura.data.file" value="${tests.dir}/cobertura.ser" />
+
+    <path id="cobertura.classpath">
+        <fileset dir="${cobertura.dir}">
+            <include name="cobertura-2.0.3.jar" />
+            <include name="lib/**/*.jar" />
+        </fileset>
+    </path>
+    
+    <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+
+    <!--
+        This Task prints environment details.
+    -->
+    <target name="info" description="prints environment details">
+        <echo />
+
+        <echo message=" projects dir ...................... ${projects.dir}" />
+        <echo />
+
+        <echo message=" remabs project dir ................ ${remabs.project.dir}" />
+        <echo message=" remabs submodules dir ............. ${remabs.project.dir}" />
+        <echo />
+
+        <echo message=" remabs common dir ................. ${remabs.common.dir}" />
+        <echo message=" remabs common sources ............. ${remabs.common.src}" />
+
+        <echo message=" remabs server dir ................. ${remabs.server.dir}" />
+        <echo message=" remabs server sources ............. ${remabs.server.src}" />
+
+        <echo message=" remabs math dir ................... ${remabs.math.dir}" />
+        <echo message=" remabs math sources ............... ${remabs.math.src}" />
+
+        <echo message=" remabs measures dir ............... ${remabs.measures.dir}" />
+        <echo message=" remabs measures sources ........... ${remabs.measures.src}" />
+
+        <echo message=" remabs persistence dir ............ ${remabs.persistence.dir}" />
+        <echo message=" remabs persistence sources ........ ${remabs.persistence.src}" />
+
+        <echo message=" remabs transformation dir ......... ${remabs.transformation.dir}" />
+        <echo message=" remabs transformation sources ..... ${remabs.transformation.src}" />
+
+        <echo message=" remabs utils dir .................. ${remabs.utils.dir}" />
+        <echo message=" remabs utils sources .............. ${remabs.utils.src}" />
+        
+        <echo message=" remabs config dir ................. ${remabs.config.dir}" />
+        <echo message=" remabs libs dir ................... ${remabs.libs.dir}" />
+        <echo />
+
+        <echo />
+        <echo message=" analysis dir ...................... ${analysis.dir}" />
+        <echo message=" analysis sources .................. ${analysis.src}" />
+        <echo message=" analysis build .................... ${analysis.build}" />
+        <echo message=" analysis configuration ............ ${analysis.config}" />
+        <echo message=" analysis libs ..................... ${analysis.libs}" />
+        <echo />
+
+        <echo />
+        <echo message=" basedir ........................... ${basedir}" />
+        <echo message=" tests dir ......................... ${tests.dir}" />
+        <echo />
+        <echo message=" tests sources ..................... ${tests.src}" />
+        <echo message=" tests build ....................... ${tests.build}" />
+        <echo message=" tests libs ........................ ${tests.libs}" />
+        <echo message=" tests reports ..................... ${tests.report}" />
+        <echo message=" tests reports2 .................... ${tests.report2}" />
+        <echo message=" tests config ...................... ${tests.config}" />
+        <echo />
+
+        <echo />
+        <echo message=" cobertura dir ..................... ${cobertura.dir}" />
+        <echo message=" instrumented dir .................. ${instrumented.dir}" />
+        <echo />
+    </target>
+
+
+    <target name="clean">
+        <delete dir="${tests.src}" />
+        <delete dir="${tests.build}" />
+        <delete dir="${tests.libs}" />
+        <delete dir="${tests.report}" />
+        <delete dir="${tests.report2}" />
+        <delete dir="${tests.config}" /> 
+        <delete dir="${instrumented.dir}" /> 
+    </target>
+
+    <target name="init">
+        <mkdir dir="${tests.src}" />
+        <mkdir dir="${tests.build}" />
+        <mkdir dir="${tests.libs}" />
+        <mkdir dir="${tests.report}" />
+        <mkdir dir="${tests.report2}" />
+        <mkdir dir="${tests.config}" />
+        <mkdir dir="${instrumented.dir}" />
+    </target>
+
+
+    <target name="copy" depends="clean, init">
+        <copy todir="${tests.src}">
+            <fileset dir="${remabs.common.src}" includes="**" />
+            <fileset dir="${remabs.server.src}" includes="**" />
+            <fileset dir="${remabs.math.src}" includes="**" />
+            <fileset dir="${remabs.measures.src}" includes="**" />
+            <fileset dir="${remabs.persistence.src}" includes="**" />
+            <fileset dir="${remabs.transformation.src}" includes="**" />
+            <fileset dir="${remabs.utils.src}" includes="**" />
+            <fileset dir="${remabs.tests.src}" includes="**" />
+        </copy>
+        
+        <copy todir="${tests.config}">
+            <fileset dir="${remabs.config.dir}" includes="**" />
+        </copy>
+        
+        <copy todir="${tests.libs}">
+            <fileset dir="${remabs.libs.dir}">
+                <include name="Commons Lang\commons-lang3-3.2.1.jar" />
+                <include name="JUnit\junit-4.11.jar" />
+                <include name="JUnit\hamcrest-core-1.3.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="build" depends="copy">
+        <javac includeantruntime="true"
+            srcdir="${tests.src}"
+            destdir="${tests.build}"
+            verbose="on">
+        
+            <classpath>
+                <pathelement location="${tests.libs}\Commons Lang\commons-lang3-3.2.1.jar" />
+                <pathelement location="${tests.libs}\JUnit\junit-4.11.jar" />
+                <pathelement location="${tests.libs}\JUnit\hamcrest-core-1.3.jar" />
+            </classpath>
+        </javac>
+    </target>
+
+
+    <target name="test" depends="build">
+
+        <delete file="${cobertura.data.file}" />
+
+        <cobertura-instrument todir="${instrumented.dir}" datafile="${cobertura.data.file}">
+
+            <ignore regex="org.apache.log4j.*" />
+
+            <fileset dir="${tests.build}">
+                <include name="**/*.class" />
+                <exclude name="**/Test*.class" />
+            </fileset>
+
+        </cobertura-instrument>
+
+        <junit fork="yes" dir="${basedir}" failureProperty="test.failed">
+
+            <jvmarg value="-Duser.dir=${tests.build}" />
+
+            <!--
+                Specify the name of the coverage data file to use.
+                The value specified below is the default.
+            -->
+            <sysproperty key="net.sourceforge.cobertura.datafile"
+                file="${tests.dir}/cobertura.ser" />
+        
+            <!--
+                Note the classpath order: instrumented classes are before the
+                original (uninstrumented) classes.  This is important.
+            -->
+            <classpath location="${instrumented.dir}" />
+            <classpath location="${tests.build}" />
+        
+            <!--
+                The instrumented classes reference classes used by the
+                Cobertura runtime, so Cobertura and its dependencies
+                must be on your classpath.
+            -->
+            <classpath refid="cobertura.classpath" />
+            <classpath location="${tests.config}" />
+            <classpath location="${tests.libs}\Commons Lang\commons-lang3-3.2.1.jar" />
+            <classpath location="${tests.libs}\JUnit\junit-4.11.jar" />
+            <classpath location="${tests.libs}\JUnit\hamcrest-core-1.3.jar" />
+        
+            <formatter type="xml" />
+            <test name="${testcase}" todir="${tests.report}" if="testcase" />
+            <batchtest todir="${tests.report}" unless="testcase">
+                <fileset dir="${tests.src}">
+                    <include name="**/Test*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <cobertura-report srcdir="${tests.src}" format="xml" datafile="${cobertura.data.file}" destdir="${tests.report2}" />
+    </target>
+
+
+</project>

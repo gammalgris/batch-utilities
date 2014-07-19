@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="common" basedir=".">
+
+    <property name="projects.dir" location="C:\projects" />
+
+
+    <property name="remabs.project.dir" location="${projects.dir}\remabs" />
+    <property name="remabs.submodules.dir" location="${remabs.project.dir}\Submodules" />
+
+    <property name="remabs.common.dir" location="${remabs.project.dir}\REMABS Common" />
+    <property name="remabs.common.src" location="${remabs.common.dir}\src" />
+
+    <property name="remabs.server.dir" location="${remabs.project.dir}\REMABS Server" />
+    <property name="remabs.server.src" location="${remabs.server.dir}\src" />
+
+    <property name="remabs.math.dir" location="${remabs.submodules.dir}\Math" />
+    <property name="remabs.math.src" location="${remabs.math.dir}\src" />
+
+    <property name="remabs.measures.dir" location="${remabs.submodules.dir}\Measures" />
+    <property name="remabs.measures.src" location="${remabs.measures.dir}\src" />
+
+    <property name="remabs.persistence.dir" location="${remabs.submodules.dir}\Persistence" />
+    <property name="remabs.persistence.src" location="${remabs.persistence.dir}\src" />
+
+    <property name="remabs.transformation.dir" location="${remabs.submodules.dir}\Transformation" />
+    <property name="remabs.transformation.src" location="${remabs.transformation.dir}\src" />
+
+    <property name="remabs.utils.dir" location="${remabs.submodules.dir}\Utils" />
+    <property name="remabs.utils.src" location="${remabs.utils.dir}\src" />
+
+    <property name="remabs.config.dir" location="${remabs.project.dir}\Config" />
+
+    <property name="remabs.libs.dir" location="${remabs.project.dir}\Libs" />
+
+
+    <property name="analysis.dir" location="${user.dir}" />
+    <property name="analysis.src" location="${analysis.dir}\src" />
+    <property name="analysis.build" location="${analysis.dir}\classes" />
+    <property name="analysis.config" location="${analysis.dir}\config" />
+    <property name="analysis.libs" location="${analysis.dir}\libs" />
+
+</project>

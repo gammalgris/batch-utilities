@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="analysis preparation" basedir="." default="info">
+
+
+    <include file="common.xml" />
+
+
+    <!--
+        This Task prints environment details.
+    -->
+    <target name="info" description="prints environment details">
+        <echo />
+
+        <echo message=" projects dir ...................... ${projects.dir}" />
+        <echo />
+
+        <echo message=" remabs project dir ................ ${remabs.project.dir}" />
+        <echo message=" remabs submodules dir ............. ${remabs.project.dir}" />
+        <echo />
+
+        <echo message=" remabs common dir ................. ${remabs.common.dir}" />
+        <echo message=" remabs common sources ............. ${remabs.common.src}" />
+
+        <echo message=" remabs server dir ................. ${remabs.server.dir}" />
+        <echo message=" remabs server sources ............. ${remabs.server.src}" />
+
+        <echo message=" remabs math dir ................... ${remabs.math.dir}" />
+        <echo message=" remabs math sources ............... ${remabs.math.src}" />
+
+        <echo message=" remabs measures dir ............... ${remabs.measures.dir}" />
+        <echo message=" remabs measures sources ........... ${remabs.measures.src}" />
+
+        <echo message=" remabs persistence dir ............ ${remabs.persistence.dir}" />
+        <echo message=" remabs persistence sources ........ ${remabs.persistence.src}" />
+
+        <echo message=" remabs transformation dir ......... ${remabs.transformation.dir}" />
+        <echo message=" remabs transformation sources ..... ${remabs.transformation.src}" />
+
+        <echo message=" remabs utils dir .................. ${remabs.utils.dir}" />
+        <echo message=" remabs utils sources .............. ${remabs.utils.src}" />
+        
+        <echo message=" remabs config dir ................. ${remabs.config.dir}" />
+        <echo message=" remabs libs dir ................... ${remabs.libs.dir}" />
+        <echo />
+
+        <echo />
+        <echo message=" analysis dir ...................... ${analysis.dir}" />
+        <echo message=" analysis sources .................. ${analysis.src}" />
+        <echo message=" analysis build .................... ${analysis.build}" />
+        <echo message=" analysis configuration ............ ${analysis.config}" />
+        <echo message=" analysis libs ..................... ${analysis.libs}" />
+        <echo />
+        
+    </target>
+
+
+    <target name="clean" description="cleans a previous build">
+        <delete dir="${analysis.src}" />
+        <delete dir="${analysis.build}" />
+        <delete dir="${analysis.config}" />
+        <delete dir="${analysis.libs}" />
+    </target>
+        
+    <target name="init" description="creates all folders which are required for deployment">
+        <mkdir dir="${analysis.dir}" />
+        <mkdir dir="${analysis.src}" />
+        <mkdir dir="${analysis.build}" />
+        <mkdir dir="${analysis.config}" />
+        <mkdir dir="${analysis.libs}" />
+    </target>
+
+
+    <target name="copy" depends="clean, init">
+        <copy todir="${analysis.src}">
+            <fileset dir="${remabs.common.src}" includes="**" />
+            <fileset dir="${remabs.server.src}" includes="**" />
+            <fileset dir="${remabs.math.src}" includes="**" />
+            <fileset dir="${remabs.measures.src}" includes="**" />
+            <fileset dir="${remabs.persistence.src}" includes="**" />
+            <fileset dir="${remabs.transformation.src}" includes="**" />
+            <fileset dir="${remabs.utils.src}" includes="**" />
+        </copy>
+        
+        <copy todir="${analysis.config}">
+            <fileset dir="${remabs.config.dir}" includes="**" />
+        </copy>
+        
+        <copy todir="${analysis.libs}">
+            <fileset dir="${remabs.libs.dir}">
+                <include name="Commons Lang\commons-lang3-3.2.1.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="build" depends="copy">
+        <javac includeantruntime="true"
+            srcdir="${analysis.src}"
+            destdir="${analysis.build}"
+            verbose="on"
+            classpath="${analysis.libs}\Commons Lang\commons-lang3-3.2.1.jar" />
+    </target>
+
+</project>
