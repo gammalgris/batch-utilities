@@ -28,24 +28,57 @@ echo     define %constantName%
 set "%constantName%=%TAB%"
 
 
-set constantName=TRUE
-echo %TAB%define %constantName%
-set "%constantName%=TRUE"
+call:defineConstant TRUE TRUE
+call:defineConstant FALSE FALSE
+
+call:defineConstant SLASH /
+call:defineConstant BACKSLASH \
 
 
-set constantName=FALSE
-echo %TAB%define %constantName%
-set "%constantName%=FALSE"
+set constantName=LEFT_CHEVRON
+echo     define %constantName%
+set "%constantName%=^<"
+
+set constantName=RIGHT_CHEVRON
+echo     define %constantName%
+set "%constantName%=^>"
+
+set constantName=LEFT_PARENTHESIS
+echo     define %constantName%
+set "%constantName%=^("
+
+set constantName=RIGHT_PARENTHESIS
+echo     define %constantName%
+set "%constantName%=^)"
+
+set constantName=AMPERSAND
+echo     define %constantName%
+set "%constantName%=^&"
 
 
-set constantName=SLASH
-echo %TAB%define %constantName%
-set "%constantName%=/"
+set constantName=LEFT_CHEVRON_REPLACEMENT
+echo     define %constantName%
+set "%constantName%=^^^<"
+
+set constantName=RIGHT_CHEVRON_REPLACEMENT
+echo     define %constantName%
+set "%constantName%=^^^>"
+
+set constantName=LEFT_PARENTHESIS_REPLACEMENT
+echo     define %constantName%
+set "%constantName%=^^^("
+
+set constantName=RIGHT_PARENTHESIS_REPLACEMENT
+echo     define %constantName%
+set "%constantName%=^^^)"
+
+set constantName=AMPERSAND_REPLACEMENT
+echo     define %constantName%
+set "%constantName%=^^^&"
 
 
-set constantName=BACKSLASH
-echo %TAB%define %constantName%
-set "%constantName%=\"
+call:defineConstant PRIME '
+call:defineConstant DOUBLE_PRIME "
 
 
 set __CONSTANTS__=loaded
@@ -56,6 +89,26 @@ goto END
 @rem ===
 @rem ===   Internal Subroutines
 @rem ===
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void defineConstant(String constantName, String value)
+@rem ---
+@rem ---   The subroutine defines the specified constant and initializes it with the
+@rem ---   specified value.
+@rem ---
+@rem ---   Constants which represent special characters cannot be defined and
+@rem ---   initialized by calling this subroutine.
+@rem ---
+
+:defineConstant
+
+	set constantName=%1
+	echo %TAB%define %constantName%
+	set "%constantName%=%2"
+
+goto:eof
+
 
 @rem --------------------------------------------------------------------------------
 @rem ---

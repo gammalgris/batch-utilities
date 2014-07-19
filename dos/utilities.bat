@@ -46,7 +46,7 @@ set LABEL_PREFIX=:
 set PUBLIC_PREFIX=PUBLIC_
 set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 
-findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0 > nul
+findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 %ifError% (
 
 	goto INVALID_SUBROUTINE_ERROR
@@ -55,8 +55,8 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0 > nul
 set INFO_FILE_SUFFIX=.info
 
 set batchName=%0
-set fullBatchPath=%~dpnx0
-set infoFile=%~dp0%0%INFO_FILE_SUFFIX%
+set "fullBatchPath=%~dpnx0"
+set "infoFile=%~dp0%0%INFO_FILE_SUFFIX%"
 set subroutineName=%1
 shift
 
@@ -66,6 +66,27 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ================================================================================
 @rem ===
 @rem ===   Public Subroutines
+@rem ===
+
+@rem ===
+@rem ===   TODO
+@rem ===
+@rem ===   - provide compatibility informations (e.g. WinXP, Windows Vista, Windows 7,
+@rem ===     Windows8, Windows 8.1) for each subroutine.
+@rem ===
+@rem ===   - provide unit tests for the various public subroutines. This serves two purposes:
+@rem ===     1) to check correctness and 2) to provide good and bad examples of usage.
+@rem ===
+@rem ===   - check the scope of "local variables" and "global variable". How is this aspect
+@rem ===     handled by the batch interpreter, especially with regard to variable names that
+@rem ===     are more commonly used?
+@rem ===
+@rem ===   - the clean up doesn't clean up variables which are defined inside a subroutine. If
+@rem ===     a subroutine runs into an error there will still be variables that haven't been
+@rem ===     cleaned up.
+@rem ===
+@rem ===   - the command 'set /P' changes the error level even if the call seemed successful.
+@rem ===     This needs further investigation.
 @rem ===
 
 @rem ===
@@ -92,7 +113,7 @@ goto %PUBLIC_PREFIX%%subroutineName%
 
 :PUBLIC_listSubroutines
 
-	for /f "delims=*" %%A in ('findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%" %fullBatchPath% 2^>nul ^| sort') do (
+	for /f "delims=*" %%A in ('findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%" "%fullBatchPath%" 2^>nul ^| sort') do (
 
 		set "name=%%A"
 
@@ -118,12 +139,12 @@ goto END
 
 :PUBLIC_info
 
-	set "subroutine=%1"
-	if '%subroutine%'=='' (
-
+	call:checkAndAssignParameter subroutine %1
+	%ifError% (
+	
 		goto MISSING_PARAMETER_ERROR
 	)
-	set "subroutine=%subroutine:"=%"
+
 
 	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutine%%SPACE%"
 	set BATCH_NAME_PATTERN={batch-name}
@@ -132,7 +153,7 @@ goto END
 
 	setlocal EnableDelayedExpansion
 
-		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" %infoFile% 2^>nul') do (
+		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" "%infoFile%" 2^>nul') do (
 
 			set "line=%%A"
 			set "line=!line:%prefix%=!"
@@ -177,12 +198,11 @@ goto END
 
 :PUBLIC_today
 
-	set "input=%1"
-	if '%input%'=='' (
+	call:checkAndAssignParameter input %1
+	%ifError% (
 
 		goto MISSING_PARAMETER_ERROR
 	)
-	set "input=%input:"=%"
 
 	set YEAR_PATTERN=yyyy
 	set MONTH_PATTERN=MM
@@ -231,12 +251,11 @@ goto END
 
 :PUBLIC_now
 
-	set "input=%1"
-	if '%input%'=='' (
-	
+	call:checkAndAssignParameter input %1
+	%ifError% (
+
 		goto MISSING_PARAMETER_ERROR
 	)
-	set "input=%input:"=%"
 
 	set HOUR_PATTERN=HH
 	set MINUTE_PATTERN=mm
@@ -288,13 +307,11 @@ goto END
 
 :PUBLIC_findFile
 
-	set "baseDirectory=%1"
-	if '%baseDirectory%'=='' (
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
 	
 		goto MISSING_BASE_DIRECTORY_ERROR
 	)
-	set "baseDirectory=%baseDirectory:"=%"
-
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
 
@@ -302,12 +319,11 @@ goto END
 	)
 
 
-	set "fileName=%2"
-	if '%fileName%'=='' (
+	call:checkAndAssignParameter fileName %2
+	%ifError% (
 	
 		goto MISSING_FILE_NAME_ERROR
 	)
-	set "fileName=%fileName:"=%"
 
 
 	for /f "delims=*" %%A in ('dir /A-D /B /S "%baseDirectory%%fileName%" 2^>nul ^| sort') do (
@@ -335,13 +351,11 @@ goto END
 
 :PUBLIC_findFileSets
 
-	set baseDirectory=%1
-	if '%baseDirectory%'=='' (
-	
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
 		goto MISSING_BASE_DIRECTORY_ERROR
 	)
-	set "baseDirectory=%baseDirectory:"=%"
-
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
 
@@ -349,12 +363,11 @@ goto END
 	)
 
 
-	set filePatterns=%2
-	if '%filePatterns%'=='' (
-	
+	call:checkAndAssignParameter filePatterns %2
+	%ifError% (
+
 		goto MISSING_FILE_PATTERNS_ERROR
 	)
-	set "filePatterns=%filePatterns:"=%"
 
 
 	for %%i in (%filePatterns%) do (
@@ -380,13 +393,11 @@ goto END
 
 :PUBLIC_findDirectory
 
-	set "baseDirectory=%1"
-	if '%baseDirectory%'=='' (
-	
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
 		goto MISSING_BASE_DIRECTORY_ERROR
 	)
-	set "baseDirectory=%baseDirectory:"=%"
-
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
 
@@ -394,15 +405,14 @@ goto END
 	)
 
 
-	set "directoryName=%2"
-	if '%directoryName%'=='' (
-	
+	call:checkAndAssignParameter directoryName %2
+	%ifError% (
+
 		goto MISSING_DIRECTORY_NAME_ERROR
 	)
-	set "directoryName=%directoryName:"=%"
 
 
-	for /f "delims=*" %%A in ('dir /A-D /B /S "%baseDirectory%%fileName%" 2^>nul ^| sort') do (
+	for /f "delims=*" %%A in ('dir /AD /B /S "%baseDirectory%%directoryName%" 2^>nul ^| sort') do (
 
 		%cprintln% %%A
 	)
@@ -427,13 +437,11 @@ goto END
 
 :PUBLIC_findDirectorySets
 
-	set baseDirectory=%1
-	if '%baseDirectory%'=='' (
-	
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
 		goto MISSING_BASE_DIRECTORY_ERROR
 	)
-	set "baseDirectory=%baseDirectory:"=%"
-
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
 
@@ -441,12 +449,11 @@ goto END
 	)
 
 
-	set directoryPatterns=%2
-	if '%directoryPatterns%'=='' (
-	
-		goto MISSING_FILE_PATTERNS_ERROR
+	call:checkAndAssignParameter directoryPatterns %2
+	%ifError% (
+
+		goto MISSING_DIRECTORY_PATTERNS_ERROR
 	)
-	set "directoryPatterns=%directoryPatterns:"=%"
 
 
 	for %%i in (%directoryPatterns%) do (
@@ -477,12 +484,11 @@ goto END
 
 :PUBLIC_checkFile
 
-	set "fullPath=%1"
-	if '%fullPath%'=='' (
-	
+	call:checkAndAssignParameter fullPath %1
+	%ifError% (
+
 		goto MISSING_PATH_ERROR
 	)
-	set "fullPath=%fullPath:"=%"
 
 
 	if not exist "%fullPath%" (
@@ -515,10 +521,400 @@ goto END
 goto END
 
 
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void stringLength(String string)
+@rem ---
+@rem ---   The subroutine determines the length of the specified string and prints
+@rem ---   the result to the console.
+@rem ---
+
+:PUBLIC_stringLength
+
+	call:checkAndAssignParameter string %1
+	%ifError% (
+
+		goto MISSING_PARAMETER_ERROR
+	)
+
+
+	setlocal EnableDelayedExpansion
+	
+		set index=0
+
+	:stringLength_loop
+
+		set char=!string:~%index%,1!
+
+		if defined char (
+
+			set /A index += 1
+			goto stringLength_loop
+
+		) else (
+
+			%cprintln% %index%
+		)
+
+	endlocal
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void assignResult(String variableName, String commandString)
+@rem ---
+@rem ---   The specified command is executed and the console printout assigned to the
+@rem ---   specified variable.
+@rem ---
+@rem ---   TODO
+@rem ---
+@rem ---   - the current implementation would assign the last line of the console
+@rem ---     output to the variable.
+@rem ---
+@rem ---   - test when and how variables within the specified command string are
+@rem ---     evaluated and check the repercussions thereof.
+@rem ---
+@rem ---   - provide examples for the command string, especially with regard to
+@rem ---     special characters (e.g. chevrons) and how they need to be escaped.
+@rem ---
+@rem ---   - some kind of error handling is required, else the last line of the
+@rem ---     executed command is assigned to the specified variable.
+@rem ---
+@rem ---   - an alternaive implementation assignArrayResult is required.
+@rem ---
+
+:PUBLIC_assignResult
+
+	call:checkAndAssignParameter variableName %1
+	%ifError% (
+
+		goto MISSING_VARIABLE_NAME_ERROR
+	)
+
+
+	if '%2'=='' (
+
+		goto MISSING_COMMAND_STRING_ERROR
+	)
+
+
+	setlocal EnableDelayedExpansion
+
+		set string=%2
+		set "string=!string:%LEFT_CHEVRON%=%LEFT_CHEVRON_REPLACEMENT%!"
+		set "string=!string:%RIGHT_CHEVRON%=%RIGHT_CHEVRON_REPLACEMENT%!"
+		set "string=!string:%LEFT_PARENTHESIS%=%LEFT_PARENTHESIS_REPLACEMENT%!"
+		set "string=!string:%RIGHT_PARENTHESIS%=%RIGHT_PARENTHESIS_REPLACEMENT%!"
+		set "string=!string:%AMPERSAND%=%AMPERSAND_REPLACEMENT%!"
+		set "string=!string:%DOUBLE_PRIME%=!"
+
+	endlocal & set "commandString=%string%"
+
+	for /F "delims=*" %%i in ('%commandString%') do (
+	
+		set "%variableName%=%%i"
+	)
+
+
+	set variableName=
+	set commandString=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void copyFiles(String baseDirectory, String targetDirectory, String filePatterns)
+@rem ---
+@rem ---   All files that match the specified file patterns are copied from the
+@rem ---   specified base directory to the specified target directory.
+@rem ---
+
+:PUBLIC_copyFiles
+
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
+		goto MISSING_BASE_DIRECTORY_ERROR
+	)
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+
+	call:checkAndAssignParameter targetDirectory %2
+	%ifError% (
+
+		goto MISSING_TARGET_DIRECTORY_ERROR
+	)
+
+	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "targetDirectory=%targetDirectory%%BACKSLASH%"
+	)
+
+
+	call:checkAndAssignParameter filePatterns %3
+	%ifError% (
+
+		goto MISSING_FILE_PATTERNS_ERROR
+	)
+
+
+	for /F "delims=*" %%i in ('call utilities.bat findFileSets "%baseDirectory%" "%filePatterns%"') do (
+
+		set "newFileName=%%i"
+
+		setlocal EnableDelayedExpansion
+
+			set "newFileName=!newFileName:%baseDirectory%=%targetDirectory%!"
+			echo xcopy /E /H /I /Y "%%i" "!newFileName!*"
+			xcopy /E /H /I /Y "%%i" "!newFileName!*"
+
+		endlocal
+	)
+
+
+	set newFileName=
+
+	set baseDirectory=
+	set targetDirectory=
+	set filePatterns=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void copyDirectories(String baseDirectory, String targetDirectory, String directoryPatterns)
+@rem ---
+@rem ---   All directories that match the specified file patterns are copied (including
+@rem ---   their contents) from the specified base directory to the specified target
+@rem ---   directory.
+@rem ---
+@rem ---   A set of directory patterns is provided as a quoted list (e.g. "test1 test2").
+@rem ---
+
+:PUBLIC_copyDirectories
+
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
+		goto MISSING_BASE_DIRECTORY_ERROR
+	)
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+
+	call:checkAndAssignParameter targetDirectory %2
+	%ifError% (
+
+		goto MISSING_TARGET_DIRECTORY_ERROR
+	)
+
+	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "targetDirectory=%targetDirectory%%BACKSLASH%"
+	)
+
+
+	call:checkAndAssignParameter directoryPatterns %3
+	%ifError% (
+
+		goto MISSING_DIRECTORY_PATTERNS_ERROR
+	)
+
+
+	for /F "delims=*" %%i in ('call utilities.bat findDirectorySets "%baseDirectory%" "%directoryPatterns%"') do (
+
+		set "newDirectoryName=%%i"
+
+		setlocal EnableDelayedExpansion
+
+			set "newDirectoryName=!newDirectoryName:%baseDirectory%=%targetDirectory%!"
+			echo xcopy /E /H /I /Y "%%i" "!newDirectoryName!"
+			xcopy /E /H /I /Y "%%i" "!newDirectoryName!"
+
+		endlocal
+	)
+
+
+	set newDirectoryName=
+
+	set baseDirectory=
+	set targetDirectory=
+	set filePatterns=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void listOldDirectories(String baseDirectory, int numberOfDays)
+@rem ---
+@rem ---   The subroutine lists all directories within the specified base directory
+@rem ---   which are older than the specified number of days.
+@rem ---
+
+:PUBLIC_listOldDirectories
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void deleteOldDirectories(String baseDirectory, int numberOfDays)
+@rem ---
+@rem ---   The subroutine deletes all directories within the specified base directory
+@rem ---   which are older than the specified number of days.
+@rem ---
+
+:PUBLIC_deleteOldDirectories
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void inputText(String promptMessage)
+@rem ---
+@rem ---   The subroutine prompts the user to enter a text. The text is printed to
+@rem ---   the console.
+@rem ---
+
+:PUBLIC_inputText
+
+	call:checkAndAssignParameter promptMessage %1
+	%ifError% (
+
+		goto MISSING_PROMPT_MESSAGE_ERROR
+	)
+
+	call:inputText enteredText "%promptMessage%"
+	%ifError% (
+
+		goto INVALID_TEXT_ERROR
+	)
+
+	%cprintln% %enteredText%
+
+
+	set promptMessage=
+	set enteredText=
+
+goto END
+
+
 @rem ================================================================================
 @rem ===
 @rem ===   Internal Subroutines
 @rem ===
+@rem ===
+@rem ===   Implementation Guidelines
+@rem ===
+@rem ===   1) Names of "local variables" should be preceded by '_' to avoid naming
+@rem ===      conflicts.
+@rem ===
+@rem ===   2) Calling other internal subroutines should be done with care due to
+@rem ===      issues regarding the scope of "local variables" and "global variables".
+@rem ===
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void checkAndAssignParameter(String _variableName, String _value)
+@rem ---
+@rem ---   The subroutine assigns the specified value to the specified variable.
+@rem ---   Surrounding quotes are removed. If no value has been specified then the
+@rem ---   subroutine exits with an error.
+@rem ---
+@rem ---   Note:
+@rem ---   This internal subroutine doesn't check the specified parameters because
+@rem ---   it expects them to be provided correctly by the caller. Additional
+@rem ---   checks might be necessary to make the subroutine more robust, though.
+@rem ---
+
+:checkAndAssignParameter
+
+	set "_variableName=%1"
+	if '%_variableName%=='' (
+	
+		exit /b 2
+	)
+
+	set "_value=%2"
+	set "_newValue=%2"
+
+	set "%_variableName%=%_value%
+	setlocal EnableDelayedExpansion
+
+		if '!%_variableName%!'=='' (
+		
+			endlocal
+
+			set _variableName=
+			set _value=
+			set _newValue=
+
+			exit /b 3
+		)
+
+		set "_newValue=%_newValue:"=%"
+	endlocal & set "%_variableName%=%_newValue%"
+
+	set _variableName=
+	set _value=
+	set _newValue=
+
+goto:eof
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void inputText(String _variableName, String _promptMessage)
+@rem ---
+@rem ---   The subroutine prompts the user to enter a text and stores the text in
+@rem ---   the specified variable.
+@rem ---
+
+:inputText
+
+	set "_variableName=%1"
+	if '%_variableName%=='' (
+	
+		exit /b 2
+	)
+
+	set "_promptMessage=%2"
+	if '%_promptMessage%=='' (
+	
+		exit /b 3
+	)
+
+
+	set %_variableName%=
+
+:inputText_repeat
+
+	set /P %_variableName%=%_promptMessage%
+
+	if not defined %_variableName% (
+
+		goto inputText_repeat
+	)
+
+
+	set _variableName=
+	set _propmptMessage=
+
+exit /b 0
+
 
 @rem --------------------------------------------------------------------------------
 @rem ---
@@ -680,6 +1076,84 @@ echo Error: The subroutine with the name "%0" expects a directory name but none 
 call:cleanUp
 
 exit /b 11
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a variable name but none was specified.
+@rem ---
+
+:MISSING_VARIABLE_NAME_ERROR
+
+echo Error: The subroutine with the name "%0" expects a variable name but none was specified!
+call:cleanUp
+
+exit /b 12
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a variable name but none was specified.
+@rem ---
+
+:MISSING_COMMAND_STRING_ERROR
+
+echo Error: The subroutine with the name "%0" expects a command string but none was specified!
+call:cleanUp
+
+exit /b 13
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a target directory but none was specified.
+@rem ---
+
+:MISSING_TARGET_DIRECTORY_ERROR
+
+echo Error: The subroutine with the name "%0" expects a target directory but none was specified!
+call:cleanUp
+
+exit /b 14
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a directory pattern but none was specified.
+@rem ---
+
+:MISSING_DIRECTORY_PATTERNS_ERROR
+
+echo Error: The subroutine with the name "%0" expects a directory pattern but none was specified!
+call:cleanUp
+
+exit /b 15
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a prompt message but none was specified.
+@rem ---
+
+:MISSING_PROMPT_MESSAGE_ERROR
+
+echo Error: The subroutine with the name "%0" expects a prompt message but none was specified!
+call:cleanUp
+
+exit /b 16
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   An invalid text was entered.
+@rem ---
+
+:INVALID_TEXT_ERROR
+
+echo Error: The subroutine with the name "%0" prompted for an input and the entered text is invalid!
+call:cleanUp
+
+exit /b 17
 
 
 @rem ================================================================================

@@ -48,7 +48,8 @@
 :PUBLIC_today {tab}Parameters:
 :PUBLIC_today 
 :PUBLIC_today {tab}{tab}[datePattern]{tab}a string which contains a date pattern. If the string
-:PUBLIC_today {tab}{tab}             {tab}contains spaces then it should be surrounded with quotes.
+:PUBLIC_today {tab}{tab}             {tab}contains spaces then it should be surrounded with double
+:PUBLIC_today {tab}{tab}             {tab}quotes.
 :PUBLIC_today 
 
 
@@ -72,7 +73,8 @@
 :PUBLIC_now {tab}Parameters:
 :PUBLIC_now 
 :PUBLIC_now {tab}{tab}[timePattern]{tab}a string which contains a time pattern. If the string
-:PUBLIC_now {tab}{tab}             {tab}contains spaces then it should be surrounded with quotes.
+:PUBLIC_now {tab}{tab}             {tab}contains spaces then it should be surrounded with double
+:PUBLIC_now {tab}{tab}             {tab}quotes.
 :PUBLIC_now 
 
 
@@ -173,3 +175,101 @@
 :PUBLIC_checkFile {tab}{tab}[fullPath]{tab}a full path that either represents a file or
 :PUBLIC_checkFile {tab}{tab}          {tab}directory.
 :PUBLIC_checkFile 
+
+
+:PUBLIC_stringLength 
+:PUBLIC_stringLength The subroutine determines the length of the specified string and prints
+:PUBLIC_stringLength the result to the console.
+:PUBLIC_stringLength 
+:PUBLIC_stringLength 
+:PUBLIC_stringLength {tab}Syntax:
+:PUBLIC_stringLength 
+:PUBLIC_stringLength {tab}{tab}{batch-name} stringLength [string]
+:PUBLIC_stringLength 
+:PUBLIC_stringLength 
+:PUBLIC_stringLength {tab}Parameters:
+:PUBLIC_stringLength 
+:PUBLIC_stringLength {tab}{tab}[string]{tab}a string whose length should be determined. Strings which
+:PUBLIC_stringLength {tab}{tab}        {tab}contain spaces should be surrounded by double quotes.
+:PUBLIC_stringLength 
+
+
+:PUBLIC_assignResult 
+:PUBLIC_assignResult The specified command is executed and the console printout assigned to the
+:PUBLIC_assignResult specified variable.
+:PUBLIC_assignResult 
+:PUBLIC_assignResult 
+:PUBLIC_assignResult {tab}Syntax:
+:PUBLIC_assignResult 
+:PUBLIC_assignResult {tab}{tab}{batch-name} assignResult [variableName] [commandString]
+:PUBLIC_assignResult 
+:PUBLIC_assignResult 
+:PUBLIC_assignResult {tab}Parameters:
+:PUBLIC_assignResult 
+:PUBLIC_assignResult {tab}{tab}[variableName]{tab}the variable which shall be assigned the result of
+:PUBLIC_assignResult {tab}{tab}              {tab}executed command.
+:PUBLIC_assignResult 
+:PUBLIC_assignResult {tab}{tab}[commandString]{tab}the command which is to be executed.
+:PUBLIC_assignResult 
+
+
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles All files that match the specified file patterns are copied from the
+:PUBLIC_copyFiles specified base directory to the specified target directory.
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles A set of file patterns is provided as a quoted list (e.g. ".pdf .txt .csv").
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}Syntax:
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}{tab}{batch-name} copyFiles [baseDirectory] [targetDirectory] [filePatterns]
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}Parameters:
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_copyFiles {tab}{tab}               {tab}file
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}{tab}[targetDirectory]{tab} a target directory
+:PUBLIC_copyFiles 
+:PUBLIC_copyFiles {tab}{tab}[filePatterns]{tab}a list of file patterns
+:PUBLIC_copyFiles 
+
+
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories All directories that match the specified file patterns are copied (including
+:PUBLIC_copyDirectories their contents) from the specified base directory to the specified target
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories A set of directory patterns is provided as a quoted list (e.g. "test1 test2").
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}Syntax:
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}{tab}{batch-name} copyFiles [baseDirectory] [targetDirectory] [filePatterns]
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}Parameters:
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}{tab}[baseDirectory]{tab}a base directory where to look for the specified
+:PUBLIC_copyDirectories {tab}{tab}               {tab}file
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}{tab}[targetDirectory]{tab} a target directory
+:PUBLIC_copyDirectories 
+:PUBLIC_copyDirectories {tab}{tab}[filePatterns]{tab}a list of file patterns
+:PUBLIC_copyDirectories 
+
+
+:PUBLIC_inputText 
+:PUBLIC_inputText The subroutine prompts the user to enter a text. The text is printed to
+:PUBLIC_inputText the console.
+:PUBLIC_inputText 
+:PUBLIC_inputText 
+:PUBLIC_inputText {tab}Syntax:
+:PUBLIC_inputText 
+:PUBLIC_inputText {tab}{tab}{batch-name} inputText [promptMessage]
+:PUBLIC_inputText 
+:PUBLIC_inputText 
+:PUBLIC_inputText {tab}Parameters:
+:PUBLIC_inputText 
+:PUBLIC_inputText {tab}{tab}[promptMessage]{tab}a prompt message
+:PUBLIC_inputText 

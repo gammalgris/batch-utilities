@@ -55,8 +55,8 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 set INFO_FILE_SUFFIX=.info
 
 set batchName=%0
-set fullBatchPath=%~dpnx0
-set infoFile=%~dp0%0%INFO_FILE_SUFFIX%
+set "fullBatchPath=%~dpnx0"
+set "infoFile=%~dp0%0%INFO_FILE_SUFFIX%"
 set subroutineName=%1
 shift
 
@@ -91,7 +91,7 @@ goto %PUBLIC_PREFIX%%subroutineName%
 
 :PUBLIC_listSubroutines
 
-	for /f "delims=*" %%A in ('findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%" %fullBatchPath% 2^>nul ^| sort') do (
+	for /f "delims=*" %%A in ('findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%" "%fullBatchPath%" 2^>nul ^| sort') do (
 
 		set "name=%%A"
 
@@ -131,7 +131,7 @@ goto END
 
 	setlocal EnableDelayedExpansion
 
-		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" %infoFile% 2^>nul') do (
+		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" "%infoFile%" 2^>nul') do (
 
 			set "line=%%A"
 			set "line=!line:%prefix%=!"
