@@ -273,3 +273,20 @@
 :PUBLIC_inputText 
 :PUBLIC_inputText {tab}{tab}[promptMessage]{tab}a prompt message
 :PUBLIC_inputText 
+
+
+:PUBLIC_logMessage 
+:PUBLIC_logMessage The subroutine prints the specified message to the console. If a output
+:PUBLIC_logMessage has been specified then the message will be written to a file as well.
+:PUBLIC_logMessage 
+:PUBLIC_logMessage 
+:PUBLIC_logMessage {tab}Syntax:
+:PUBLIC_logMessage {tab}{tab}{batch-name} logMessage [message]
+:PUBLIC_logMessage {tab}{tab}{batch-name} logMessage [message] [outputFile]
+:PUBLIC_logMessage 
+:PUBLIC_logMessage 
+:PUBLIC_logMessage {tab}Parameters:
+:PUBLIC_logMessage 
+:PUBLIC_logMessage {tab}{tab}[message]{tab}a message
+:PUBLIC_logMessage {tab}{tab}[outputFile]{tab}an output file
+:PUBLIC_logMessage 

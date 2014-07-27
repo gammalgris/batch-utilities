@@ -812,6 +812,43 @@ goto END
 goto END
 
 
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void logMessage(String message)
+@rem ---   void logMessage(String message, String outputFile)
+@rem ---
+@rem ---   The subroutine prints the specified message to the console. If a output
+@rem ---   has been specified then the message will be written to a file as well.
+@rem ---
+
+:PUBLIC_logMessage
+
+	call:checkAndAssignParameter message %1
+	%ifError% (
+
+		goto MISSING_MESSAGE_ERROR
+	)
+
+	call:inputText outputFile %2
+	%ifError% (
+
+		goto logMessage_consoleOutputOnly
+	)
+
+
+	%cprintln% %message% >> %outputFile%
+
+:logMessage_consoleOutputOnly
+
+	%cprintln% %message%
+
+
+	set message=
+	set outputFile=
+
+goto END
+
+
 @rem ================================================================================
 @rem ===
 @rem ===   Internal Subroutines
@@ -886,13 +923,13 @@ goto:eof
 :inputText
 
 	set "_variableName=%1"
-	if '%_variableName%=='' (
+	if '%_variableName%'=='' (
 	
 		exit /b 2
 	)
 
 	set "_promptMessage=%2"
-	if '%_promptMessage%=='' (
+	if '%_promptMessage%'=='' (
 	
 		exit /b 3
 	)
@@ -1154,6 +1191,19 @@ echo Error: The subroutine with the name "%0" prompted for an input and the ente
 call:cleanUp
 
 exit /b 17
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a message but none was specified.
+@rem ---
+
+:MISSING_MESSAGE_ERROR
+
+echo Error: The subroutine with the name "%0" expects a message but none was specified!
+call:cleanUp
+
+exit /b 18
 
 
 @rem ================================================================================
