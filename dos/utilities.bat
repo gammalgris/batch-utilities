@@ -54,9 +54,9 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 
 set INFO_FILE_SUFFIX=.info
 
-set batchName=%0
+set "batchName=%0"
 set "fullBatchPath=%~dpnx0"
-set "infoFile=%~dp0%0%INFO_FILE_SUFFIX%"
+set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
 set subroutineName=%1
 shift
 
@@ -98,6 +98,7 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===   4) http://stackoverflow.com/questions/3215501/batch-remove-file-extension
 @rem ===   5) http://stackoverflow.com/questions/17063947/get-current-batchfile-directory
 @rem ===   6) http://stackoverflow.com/questions/8797983/can-a-dos-batch-file-determine-its-own-file-name
+@rem ===   7) http://stackoverflow.com/questions/6359318/how-do-i-send-a-message-to-stderr-from-cmd
 @rem ===
 
 
@@ -849,6 +850,100 @@ goto END
 goto END
 
 
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void callProgram(String programPath, String executableName, String someParameters)
+@rem ---
+@rem ---   The subroutine calls the specified program. Before actually calling the program
+@rem ---   several plausibility checks are performed (e.g. Does it exist? Is it a batch file?
+@rem ---   etc.).
+@rem ---
+
+:PUBLIC_callProgram
+
+	call:checkAndAssignParameter programPath %1
+	%ifError% (
+
+		goto MISSING_PROGRAM_PATH_ERROR
+	)
+
+	call:checkAndAssignParameter executableName %2
+	%ifError% (
+
+		goto MISSING_EXECUTABLE_NAME_ERROR
+	)
+
+	call:checkAndAssignParameter someParameters %3
+	%ifError% (
+
+		goto MISSING_PARAMETERS_ERROR
+	)
+
+	%cprintln% DEBUG::program path ...... %programPath%
+	%cprintln% DEBUG::executable name ... %executableName%
+	%cprintln% DEBUG::some parameters ... %someParameters%
+
+
+	set BATCH_SUFFIX=.bat
+	set EXE_SUFFIX=.exe
+	set COM_SUFFIX=.com
+
+	if not exist "%programPath%%executableName%" (
+
+		goto NONEXISTANT_PROGRAM_ERROR
+	)
+
+	set "foundSuffix=%executableName:~-4%"
+	%cprintln% DEBUG::found suffix ...... %foundSuffix%
+
+	set invocationPrefix=
+
+
+	if "%foundSuffix%"=="%BATCH_SUFFIX%" (
+
+		set invocationPrefix=call
+
+	) else (
+	
+		if "%foundSuffix%"=="%EXE_SUFFIX%" (
+
+			@rem OK, no prefix
+
+		) else (
+
+			if "%foundSuffix%"=="%COM_SUFFIX%" (
+
+				@rem OK, no prefix
+
+			) else (
+
+				goto NO_EXECUTABLE_SPECIFIED_ERROR
+			)
+		)
+	)
+
+
+	%cprintln% DEBUG::%invocationPrefix% "%programPath%%executableName%" %someParameters%
+	%invocationPrefix% "%programPath%%executableName%" %someParameters%
+	%ifError% (
+
+		goto FAILED_INVOCATION_ERROR
+	)
+
+
+	set programPath=
+	set executableName=
+	set someParameters=
+	set foundSuffix=
+	set invocationPrefix=
+
+	set BATCH_SUFFIX=
+	set EXE_SUFFIX=
+	set COM_SUFFIX=
+
+goto END
+
+
 @rem ================================================================================
 @rem ===
 @rem ===   Internal Subroutines
@@ -992,7 +1087,7 @@ goto:eof
 
 :MISSING_CONSTANTS_ERROR
 
-echo Error: A prerequisite (constants) is missing!
+echo Error: A prerequisite (constants) is missing! 1>&2
 call:cleanUp
 
 exit /b 2
@@ -1005,7 +1100,7 @@ exit /b 2
 
 :MISSING_MACROS_ERROR
 
-echo Error: A prerequisite (macros) is missing!
+echo Error: A prerequisite (macros) is missing! 1>&2
 call:cleanUp
 
 exit /b 3
@@ -1018,7 +1113,7 @@ exit /b 3
 
 :NO_SUBROUTINE_ERROR
 
-echo Error: No subroutine has been specified!
+echo Error: No subroutine has been specified! 1>&2
 call:cleanUp
 
 exit /b 4
@@ -1031,7 +1126,7 @@ exit /b 4
 
 :INVALID_SUBROUTINE_ERROR
 
-echo Error: No subroutine with the name "%1" exists!
+echo Error: No subroutine with the name "%1" exists! 1>&2
 call:cleanUp
 
 exit /b 5
@@ -1044,7 +1139,7 @@ exit /b 5
 
 :MISSING_PARAMETER_ERROR
 
-echo Error: The subroutine with the name "%0" expects a parameter but none was specified!
+echo Error: The subroutine with the name "%0" expects a parameter but none was specified! 1>&2
 call:cleanUp
 
 exit /b 6
@@ -1057,7 +1152,7 @@ exit /b 6
 
 :MISSING_BASE_DIRECTORY_ERROR
 
-echo Error: The subroutine with the name "%0" expects a directory but none was specified!
+echo Error: The subroutine with the name "%0" expects a directory but none was specified! 1>&2
 call:cleanUp
 
 exit /b 7
@@ -1070,7 +1165,7 @@ exit /b 7
 
 :MISSING_FILE_NAME_ERROR
 
-echo Error: The subroutine with the name "%0" expects a file name but none was specified!
+echo Error: The subroutine with the name "%0" expects a file name but none was specified! 1>&2
 call:cleanUp
 
 exit /b 8
@@ -1083,7 +1178,7 @@ exit /b 8
 
 :MISSING_FILE_PATTERNS_ERROR
 
-echo Error: The subroutine with the name "%0" expects a file pattern but none was specified!
+echo Error: The subroutine with the name "%0" expects a file pattern but none was specified! 1>&2
 call:cleanUp
 
 exit /b 9
@@ -1096,7 +1191,7 @@ exit /b 9
 
 :MISSING_PATH_ERROR
 
-echo Error: The subroutine with the name "%0" expects a path but none was specified!
+echo Error: The subroutine with the name "%0" expects a path but none was specified! 1>&2
 call:cleanUp
 
 exit /b 10
@@ -1109,7 +1204,7 @@ exit /b 10
 
 :MISSING_DIRECTORY_NAME_ERROR
 
-echo Error: The subroutine with the name "%0" expects a directory name but none was specified!
+echo Error: The subroutine with the name "%0" expects a directory name but none was specified! 1>&2
 call:cleanUp
 
 exit /b 11
@@ -1122,7 +1217,7 @@ exit /b 11
 
 :MISSING_VARIABLE_NAME_ERROR
 
-echo Error: The subroutine with the name "%0" expects a variable name but none was specified!
+echo Error: The subroutine with the name "%0" expects a variable name but none was specified! 1>&2
 call:cleanUp
 
 exit /b 12
@@ -1135,7 +1230,7 @@ exit /b 12
 
 :MISSING_COMMAND_STRING_ERROR
 
-echo Error: The subroutine with the name "%0" expects a command string but none was specified!
+echo Error: The subroutine with the name "%0" expects a command string but none was specified! 1>&2
 call:cleanUp
 
 exit /b 13
@@ -1148,7 +1243,7 @@ exit /b 13
 
 :MISSING_TARGET_DIRECTORY_ERROR
 
-echo Error: The subroutine with the name "%0" expects a target directory but none was specified!
+echo Error: The subroutine with the name "%0" expects a target directory but none was specified! 1>&2
 call:cleanUp
 
 exit /b 14
@@ -1161,7 +1256,7 @@ exit /b 14
 
 :MISSING_DIRECTORY_PATTERNS_ERROR
 
-echo Error: The subroutine with the name "%0" expects a directory pattern but none was specified!
+echo Error: The subroutine with the name "%0" expects a directory pattern but none was specified! 1>&2
 call:cleanUp
 
 exit /b 15
@@ -1174,7 +1269,7 @@ exit /b 15
 
 :MISSING_PROMPT_MESSAGE_ERROR
 
-echo Error: The subroutine with the name "%0" expects a prompt message but none was specified!
+echo Error: The subroutine with the name "%0" expects a prompt message but none was specified! 1>&2
 call:cleanUp
 
 exit /b 16
@@ -1187,7 +1282,7 @@ exit /b 16
 
 :INVALID_TEXT_ERROR
 
-echo Error: The subroutine with the name "%0" prompted for an input and the entered text is invalid!
+echo Error: The subroutine with the name "%0" prompted for an input and the entered text is invalid! 1>&2
 call:cleanUp
 
 exit /b 17
@@ -1200,10 +1295,88 @@ exit /b 17
 
 :MISSING_MESSAGE_ERROR
 
-echo Error: The subroutine with the name "%0" expects a message but none was specified!
+echo Error: The subroutine with the name "%0" expects a message but none was specified! 1>&2
 call:cleanUp
 
 exit /b 18
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a program path but none was specified.
+@rem ---
+
+:MISSING_PROGRAM_PATH_ERROR
+
+echo Error: The subroutine with the name "%0" expects a program path but none was specified! 1>&2
+call:cleanUp
+
+exit /b 19
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects the name of an executable but none was specified.
+@rem ---
+
+:MISSING_EXECUTABLE_NAME_ERROR
+
+echo Error: The subroutine with the name "%0" expects the name of an executable but none was specified! 1>&2
+call:cleanUp
+
+exit /b 20
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects some parameters but none were specified.
+@rem ---
+
+:MISSING_PARAMETERS_ERROR
+
+echo Error: The subroutine with the name "%0" expects some parameters but none were specified! 1>&2
+call:cleanUp
+
+exit /b 21
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine tries to call a program which doesn't exist.
+@rem ---
+
+:NONEXISTANT_PROGRAM_ERROR
+
+echo Error: The subroutine with the name "%0" tries to call a program which doesn't exist! 1>&2
+call:cleanUp
+
+exit /b 22
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine tries to call a program which is no executable.
+@rem ---
+
+:NO_EXECUTABLE_SPECIFIED_ERROR
+
+echo Error: The subroutine with the name "%0" tries to call a program which is no executable! 1>&2
+call:cleanUp
+
+exit /b 23
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine called an external program and an error occurred.
+@rem ---
+
+:FAILED_INVOCATION_ERROR
+
+echo Error: The subroutine with the name "%0" called an external program and an error occurred! 1>&2
+call:cleanUp
+
+exit /b 24
 
 
 @rem ================================================================================

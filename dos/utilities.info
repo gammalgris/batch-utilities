@@ -20,7 +20,7 @@
 :PUBLIC_info 
 :PUBLIC_info {tab}Syntax:
 :PUBLIC_info 
-:PUBLIC_info {tab}{batch-name} info [subroutine]
+:PUBLIC_info {tab}{tab}{batch-name} info [subroutine]
 :PUBLIC_info 
 :PUBLIC_info 
 :PUBLIC_info {tab}Parameters:
@@ -290,3 +290,21 @@
 :PUBLIC_logMessage {tab}{tab}[message]{tab}a message
 :PUBLIC_logMessage {tab}{tab}[outputFile]{tab}an output file
 :PUBLIC_logMessage 
+
+:PUBLIC_callProgram 
+:PUBLIC_callProgram The subroutine calls the specified program. Before actually calling
+:PUBLIC_callProgram the program several plausibility checks are performed (e.g. Does it
+:PUBLIC_callProgram exist? Is it a batch file?The subroutine prints the specified message
+:PUBLIC_callProgram to the console. If a output
+:PUBLIC_callProgram 
+:PUBLIC_callProgram 
+:PUBLIC_callProgram {tab}Syntax:
+:PUBLIC_callProgram {tab}{tab}{batch-name} callProgram [programPath] [executableName] [someParameters]
+:PUBLIC_callProgram 
+:PUBLIC_callProgram 
+:PUBLIC_callProgram {tab}Parameters:
+:PUBLIC_callProgram 
+:PUBLIC_callProgram {tab}{tab}[programPath]{tab}a program path
+:PUBLIC_callProgram {tab}{tab}[executableName]{tab}the name of an executable
+:PUBLIC_callProgram {tab}{tab}[someParameters]{tab}some parameters
+:PUBLIC_callProgram 
