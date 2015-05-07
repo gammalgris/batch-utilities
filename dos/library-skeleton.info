@@ -20,7 +20,7 @@
 :PUBLIC_info 
 :PUBLIC_info {tab}Syntax:
 :PUBLIC_info 
-:PUBLIC_info {tab}{batch-name} info [subroutine]
+:PUBLIC_info {tab}{tab}{batch-name} info [subroutine]
 :PUBLIC_info 
 :PUBLIC_info 
 :PUBLIC_info {tab}Parameters:

@@ -54,9 +54,9 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 
 set INFO_FILE_SUFFIX=.info
 
-set batchName=%0
+set "batchName=%0"
 set "fullBatchPath=%~dpnx0"
-set "infoFile=%~dp0%0%INFO_FILE_SUFFIX%"
+set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
 set subroutineName=%1
 shift
 
@@ -77,6 +77,7 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===   4) http://stackoverflow.com/questions/3215501/batch-remove-file-extension
 @rem ===   5) http://stackoverflow.com/questions/17063947/get-current-batchfile-directory
 @rem ===   6) http://stackoverflow.com/questions/8797983/can-a-dos-batch-file-determine-its-own-file-name
+@rem ===   7) http://stackoverflow.com/questions/6359318/how-do-i-send-a-message-to-stderr-from-cmd
 @rem ===
 
 @rem --------------------------------------------------------------------------------
@@ -220,7 +221,7 @@ goto:eof
 
 :MISSING_CONSTANTS_ERROR
 
-echo Error: A prerequisite (constants) is missing!
+echo Error: A prerequisite (constants) is missing! 1>&2
 call:cleanUp
 
 exit /b 2
@@ -233,7 +234,7 @@ exit /b 2
 
 :MISSING_MACROS_ERROR
 
-echo Error: A prerequisite (macros) is missing!
+echo Error: A prerequisite (macros) is missing! 1>&2
 call:cleanUp
 
 exit /b 3
@@ -246,7 +247,7 @@ exit /b 3
 
 :NO_SUBROUTINE_ERROR
 
-echo Error: No subroutine has been specified!
+echo Error: No subroutine has been specified! 1>&2
 call:cleanUp
 
 exit /b 4
@@ -259,10 +260,23 @@ exit /b 4
 
 :INVALID_SUBROUTINE_ERROR
 
-echo Error: No subroutine with the name "%1" exists!
+echo Error: No subroutine with the name "%1" exists! 1>&2
 call:cleanUp
 
 exit /b 5
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A subroutine expects a parameter but none was specified.
+@rem ---
+
+:MISSING_PARAMETER_ERROR
+
+echo Error: The subroutine with the name "%0" expects a parameter but none was specified! 1>&2
+call:cleanUp
+
+exit /b 6
 
 
 @rem ================================================================================
