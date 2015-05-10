@@ -15,6 +15,6 @@ A collection of batch utilities for various operating systems.
 
    utilities.bat info info
    
-   utilities.bat info listSúbroutines
+   utilities.bat info listSubroutines
    utilities.bat listSubroutines
 ```
