@@ -4,10 +4,14 @@ A collection of batch utilities for various operating systems.
 
 ## Usage
 
-```
-  library-skeleton listSubroutines
-  library-skeleton info info
+### DOS
 
-  utilities.bat listSubroutines
+```
+   library-skeleton info info
+   library-skeleton info info
+   library-skeleton listSubroutines
+
   utilities.bat info info
+  utilities.bat info listSúbroutines
+  utilities.bat listSubroutines
 ```
