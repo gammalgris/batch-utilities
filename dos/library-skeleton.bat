@@ -3,6 +3,21 @@
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   Initialization
+@rem ---
+
+set INFO_FILE_SUFFIX=.info
+set ERRORS_FILE_SUFFIX=.errors
+
+set "batchName=%0"
+set "fullBatchPath=%~dpnx0"
+set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
+set "errorsFile=%~dp0%~n0%ERRORS_FILE_SUFFIX%"
+set subroutineName=%1
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   Load prerequisites
 @rem ---
 
@@ -13,7 +28,8 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	goto MISSING_CONSTANTS_ERROR
+	call:handleError MissingConstantsError
+	%return% %code%
 )
 
 call define-macros.bat
@@ -23,7 +39,8 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	goto MISSING_MACROS_ERROR
+	call:handleError MissingMacrosError
+	%return% %code%
 )
 
 
@@ -38,7 +55,8 @@ if "%ERRORLEVEL%"=="0" (
 
 if "%1"=="" (
 
-	goto NO_SUBROUTINE_ERROR
+	call:handleError NoSubroutineError
+	%return% %code%
 )
 
 
@@ -49,17 +67,12 @@ set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 %ifError% (
 
-	goto INVALID_SUBROUTINE_ERROR
+	call:handleError InvalidSubroutineError
+	%return% %code%
 )
 
-set INFO_FILE_SUFFIX=.info
 
-set "batchName=%0"
-set "fullBatchPath=%~dpnx0"
-set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
-set subroutineName=%1
 shift
-
 goto %PUBLIC_PREFIX%%subroutineName%
 
 
@@ -121,7 +134,8 @@ goto END
 	set "subroutine=%1"
 	if '%subroutine%'=='' (
 
-		goto MISSING_PARAMETER_ERROR
+		call:handleError MissingParameterError
+		%return% %code%
 	)
 	set "subroutine=%subroutine:"=%"
 
@@ -196,13 +210,79 @@ goto END
 	set PUBLIC_PREFIX=
 	set PUBLIC_LABEL_PREFIX=
 	set INFO_FILE_SUFFIX=
+	set ERRORS_FILE_SUFFIX=
 
 	set batchName=
 	set fullBatchPath=
 	set infoFile=
+	set errorsFile=
 	set subroutineName=
 
-goto:eof
+%return%
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void extractLine(String variableName, String linePattern, String file name)
+@rem ---
+@rem ---   Looks within the specified file for a matching line (i.e. a line which
+@rem ---   starts with the specified pattern) and assigns the line value to the
+@rem ---   specified variable.
+@rem ---
+
+:extractLine
+
+	set "variableName=%1"
+	if '%variableName%'=='' (
+
+		call:printErrorMessage "(%0) No variable name has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "variableName=%variableName:"=%"
+
+
+	set "linePattern=%2"
+	if '%linePattern%'=='' (
+
+		call:printErrorMessage "(%0) No line pattern has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "linePattern=%linePattern:"=%"
+
+
+	set "filename=%3"
+	if '%filename%'=='' (
+
+		call:printErrorMessage "(%0) No file name has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "filename=%filename:"=%"
+
+
+	setlocal EnableDelayedExpansion
+
+		for /f "delims=*" %%A in ('findstr /r /i /C:"^%linePattern%" "%filename%" 2^>nul') do (
+
+			set "line=%%A"
+			set "line=!line:%linePattern%=!"
+		)
+
+	endlocal & set "%variableName%=%line%"
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void printErrorMessage(String errorMessage)
+@rem ---
+@rem ---   Prints the specified error message to the console.
+@rem ---
+
+:printErrorMessage
+
+	%cprintln% Error: %~1 1>&2
+
+%return%
 
 
 @rem ================================================================================
@@ -216,67 +296,60 @@ goto:eof
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A prerequisite (constants) is missing.
+@rem ---   void handleError(String errorName)
+@rem ---
+@rem ---   A subroutine for handling errors.
 @rem ---
 
-:MISSING_CONSTANTS_ERROR
+:handleError
 
-echo Error: A prerequisite (constants) is missing! 1>&2
-call:cleanUp
-
-exit /b 2
+	set "CODE_SUFFIX=.code@"
+	set "MESSAGE_SUFFIX=.message@"
 
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A prerequisite (macros) is missing.
-@rem ---
+	set "errorName=%1"
+	if '%errorName%'=='' (
 
-:MISSING_MACROS_ERROR
+		call:printErrorMessage "(%0) Errorhandling cannot proceed beacuse no error was specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "errorName=%errorName:"=%"
 
-echo Error: A prerequisite (macros) is missing! 1>&2
-call:cleanUp
-
-exit /b 3
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   No subroutine has been specified.
-@rem ---
-
-:NO_SUBROUTINE_ERROR
-
-echo Error: No subroutine has been specified! 1>&2
-call:cleanUp
-
-exit /b 4
+	set errorCodeKey=%errorName%%CODE_SUFFIX%
+	set errorMessageKey=%errorName%%MESSAGE_SUFFIX%
 
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   An invalid subroutine has been specified.
-@rem ---
+	set code=
+	call:extractLine code %errorCodeKey% %errorsFile%
+	if '%code%'=='' (
 
-:INVALID_SUBROUTINE_ERROR
+		call:printErrorMessage "(%0) No error code has been specified for the error '%errorName%'!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
 
-echo Error: No subroutine with the name "%1" exists! 1>&2
-call:cleanUp
+	set message=
+	call:extractLine message %errorMessageKey% %errorsFile%
+	if "%message%"=="" (
 
-exit /b 5
+		call:printErrorMessage "(%0) No error message has been specified for the error '%errorName%'!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+
+	
+	call:PrintErrorMessage "%message%"
 
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a parameter but none was specified.
-@rem ---
+	set CODE_SUFFIX=
+	set MESSAGE_SUFFIX=
 
-:MISSING_PARAMETER_ERROR
+	set errorName=
+	set errorCodeKey=
+	set errorMessageKey=
+	set message=
 
-echo Error: The subroutine with the name "%0" expects a parameter but none was specified! 1>&2
-call:cleanUp
+	call:cleanUp
 
-exit /b 6
+%return% %code%
 
 
 @rem ================================================================================
@@ -288,4 +361,4 @@ exit /b 6
 
 call:cleanUp
 
-exit /b 0
+%return% %NO_ERROR%

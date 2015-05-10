@@ -103,6 +103,16 @@ if "%ERRORLEVEL%"=="1" (
 )
 
 
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   A macro for exiting a batch script or subroutine.
+@rem ---
+
+set "macroName=return"
+echo %TAB%define %macroName%
+set "%macroName%=exit /b"
+
+
 set __MACROS__=loaded
 goto END
 

@@ -81,6 +81,10 @@ call:defineConstant PRIME '
 call:defineConstant DOUBLE_PRIME "
 
 
+call:defineConstant NO_ERROR 0
+call:defineConstant GENERIC_FRAMEWORK_ERROR 2
+
+
 set __CONSTANTS__=loaded
 goto END
 
