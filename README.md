@@ -6,12 +6,12 @@ A collection of batch utilities for various operating systems.
 
 ### DOS
 
-```
+```Batchfile
    library-skeleton info info
    library-skeleton info info
    library-skeleton listSubroutines
 
-  utilities.bat info info
-  utilities.bat info listSúbroutines
-  utilities.bat listSubroutines
+   utilities.bat info info
+   utilities.bat info listSúbroutines
+   utilities.bat listSubroutines
 ```
