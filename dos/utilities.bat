@@ -3,6 +3,21 @@
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   Initialization
+@rem ---
+
+set INFO_FILE_SUFFIX=.info
+set ERRORS_FILE_SUFFIX=.errors
+
+set "batchName=%0"
+set "fullBatchPath=%~dpnx0"
+set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
+set "errorsFile=%~dp0%~n0%ERRORS_FILE_SUFFIX%"
+set subroutineName=%1
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   Load prerequisites
 @rem ---
 
@@ -13,7 +28,8 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	goto MISSING_CONSTANTS_ERROR
+	call:handleError MissingConstantsError
+	%return% %code%
 )
 
 call define-macros.bat
@@ -23,7 +39,8 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	goto MISSING_MACROS_ERROR
+	call:handleError MissingMacrosError
+	%return% %code%
 )
 
 
@@ -38,7 +55,8 @@ if "%ERRORLEVEL%"=="0" (
 
 if "%1"=="" (
 
-	goto NO_SUBROUTINE_ERROR
+	call:handleError NoSubroutineError
+	%return% %code%
 )
 
 
@@ -49,17 +67,12 @@ set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 %ifError% (
 
-	goto INVALID_SUBROUTINE_ERROR
+	call:handleError InvalidSubroutineError
+	%return% %code%
 )
 
-set INFO_FILE_SUFFIX=.info
 
-set "batchName=%0"
-set "fullBatchPath=%~dpnx0"
-set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
-set subroutineName=%1
 shift
-
 goto %PUBLIC_PREFIX%%subroutineName%
 
 
@@ -140,12 +153,13 @@ goto END
 
 :PUBLIC_info
 
-	call:checkAndAssignParameter subroutine %1
-	%ifError% (
-	
-		goto MISSING_PARAMETER_ERROR
-	)
+	set "subroutine=%1"
+	if '%subroutine%'=='' (
 
+		call:handleError MissingParameterError
+		%return% %code%
+	)
+	set "subroutine=%subroutine:"=%"
 
 	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutine%%SPACE%"
 	set BATCH_NAME_PATTERN={batch-name}
@@ -202,7 +216,8 @@ goto END
 	call:checkAndAssignParameter input %1
 	%ifError% (
 
-		goto MISSING_PARAMETER_ERROR
+		call:handleError MissingParameterError
+		%return% %code%
 	)
 
 	set YEAR_PATTERN=yyyy
@@ -255,7 +270,8 @@ goto END
 	call:checkAndAssignParameter input %1
 	%ifError% (
 
-		goto MISSING_PARAMETER_ERROR
+		call:handleError MissingParameterError
+		%return% %code%
 	)
 
 	set HOUR_PATTERN=HH
@@ -311,7 +327,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 	
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -323,7 +340,8 @@ goto END
 	call:checkAndAssignParameter fileName %2
 	%ifError% (
 	
-		goto MISSING_FILE_NAME_ERROR
+		call:handleError MissingFileNameError
+		%return% %code%
 	)
 
 
@@ -355,7 +373,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -367,7 +386,8 @@ goto END
 	call:checkAndAssignParameter filePatterns %2
 	%ifError% (
 
-		goto MISSING_FILE_PATTERNS_ERROR
+		call:handleError MissingFilePatternsError
+		%return% %code%
 	)
 
 
@@ -397,7 +417,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -409,7 +430,8 @@ goto END
 	call:checkAndAssignParameter directoryName %2
 	%ifError% (
 
-		goto MISSING_DIRECTORY_NAME_ERROR
+		call:handleError MissingDirectoryNameError
+		%return% %code%
 	)
 
 
@@ -441,7 +463,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -453,7 +476,8 @@ goto END
 	call:checkAndAssignParameter directoryPatterns %2
 	%ifError% (
 
-		goto MISSING_DIRECTORY_PATTERNS_ERROR
+		call:handleError MissingDirectoryPatternsError
+		%return% %code%
 	)
 
 
@@ -488,7 +512,8 @@ goto END
 	call:checkAndAssignParameter fullPath %1
 	%ifError% (
 
-		goto MISSING_PATH_ERROR
+		call:handleError MissingPathError
+		%return% %code%
 	)
 
 
@@ -535,7 +560,8 @@ goto END
 	call:checkAndAssignParameter string %1
 	%ifError% (
 
-		goto MISSING_PARAMETER_ERROR
+		call:handleError MissingParameterError
+		%return% %code%
 	)
 
 
@@ -591,13 +617,15 @@ goto END
 	call:checkAndAssignParameter variableName %1
 	%ifError% (
 
-		goto MISSING_VARIABLE_NAME_ERROR
+		call:handleError MissingVariableNameError
+		%return% %code%
 	)
 
 
 	if '%2'=='' (
 
-		goto MISSING_COMMAND_STRING_ERROR
+		call:handleError MissingCommandStringError
+		%return% %code%
 	)
 
 
@@ -638,7 +666,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -650,7 +679,8 @@ goto END
 	call:checkAndAssignParameter targetDirectory %2
 	%ifError% (
 
-		goto MISSING_TARGET_DIRECTORY_ERROR
+		call:handleError MissinTargetDirectoryError
+		%return% %code%
 	)
 
 	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
@@ -662,7 +692,8 @@ goto END
 	call:checkAndAssignParameter filePatterns %3
 	%ifError% (
 
-		goto MISSING_FILE_PATTERNS_ERROR
+		call:handleError MissingFilePatternsError
+		%return% %code%
 	)
 
 
@@ -705,7 +736,8 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		goto MISSING_BASE_DIRECTORY_ERROR
+		call:handleError MissingBaseDirectoryError
+		%return% %code%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -717,7 +749,8 @@ goto END
 	call:checkAndAssignParameter targetDirectory %2
 	%ifError% (
 
-		goto MISSING_TARGET_DIRECTORY_ERROR
+		call:handleError MissingTargetDirectoryError
+		%return% %code%
 	)
 
 	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
@@ -729,7 +762,8 @@ goto END
 	call:checkAndAssignParameter directoryPatterns %3
 	%ifError% (
 
-		goto MISSING_DIRECTORY_PATTERNS_ERROR
+		call:handleError MissingDirectoryPatternsError
+		%return% %code%
 	)
 
 
@@ -795,13 +829,15 @@ goto END
 	call:checkAndAssignParameter promptMessage %1
 	%ifError% (
 
-		goto MISSING_PROMPT_MESSAGE_ERROR
+		call:handleError MissingPromptMessageError
+		%return% %code%
 	)
 
 	call:inputText enteredText "%promptMessage%"
 	%ifError% (
 
-		goto INVALID_TEXT_ERROR
+		call:handleError InvalidTextError
+		%return% %code%
 	)
 
 	%cprintln% %enteredText%
@@ -827,7 +863,8 @@ goto END
 	call:checkAndAssignParameter message %1
 	%ifError% (
 
-		goto MISSING_MESSAGE_ERROR
+		call:handleError MissingMessageError
+		%return% %code%
 	)
 
 	call:inputText outputFile %2
@@ -864,19 +901,22 @@ goto END
 	call:checkAndAssignParameter programPath %1
 	%ifError% (
 
-		goto MISSING_PROGRAM_PATH_ERROR
+		call:handleError MissingProgramPathError
+		%return% %code%
 	)
 
 	call:checkAndAssignParameter executableName %2
 	%ifError% (
 
-		goto MISSING_EXECUTABLE_NAME_ERROR
+		call:handleError MissingExecutableNameError
+		%return% %code%
 	)
 
 	call:checkAndAssignParameter someParameters %3
 	%ifError% (
 
-		goto MISSING_PARAMETERS_ERROR
+		call:handleError MissingParametersError
+		%return% %code%
 	)
 
 	%cprintln% DEBUG::program path ...... %programPath%
@@ -890,7 +930,8 @@ goto END
 
 	if not exist "%programPath%%executableName%" (
 
-		goto NONEXISTANT_PROGRAM_ERROR
+		call:handleError NonexistantError
+		%return% %code%
 	)
 
 	set "foundSuffix=%executableName:~-4%"
@@ -927,7 +968,8 @@ goto END
 	%invocationPrefix% "%programPath%%executableName%" %someParameters%
 	%ifError% (
 
-		goto FAILED_INVOCATION_ERROR
+		call:handleError FailedInvocationError
+		%return% %code%
 	)
 
 
@@ -977,7 +1019,7 @@ goto END
 	set "_variableName=%1"
 	if '%_variableName%=='' (
 	
-		exit /b 2
+		%return% 2
 	)
 
 	set "_value=%2"
@@ -994,7 +1036,7 @@ goto END
 			set _value=
 			set _newValue=
 
-			exit /b 3
+			%return% 3
 		)
 
 		set "_newValue=%_newValue:"=%"
@@ -1004,7 +1046,7 @@ goto END
 	set _value=
 	set _newValue=
 
-goto:eof
+%return%
 
 
 @rem --------------------------------------------------------------------------------
@@ -1020,13 +1062,13 @@ goto:eof
 	set "_variableName=%1"
 	if '%_variableName%'=='' (
 	
-		exit /b 2
+		%return% 2
 	)
 
 	set "_promptMessage=%2"
 	if '%_promptMessage%'=='' (
 	
-		exit /b 3
+		%return% 3
 	)
 
 
@@ -1045,7 +1087,7 @@ goto:eof
 	set _variableName=
 	set _propmptMessage=
 
-exit /b 0
+%return%
 
 
 @rem --------------------------------------------------------------------------------
@@ -1062,13 +1104,80 @@ exit /b 0
 	set PUBLIC_PREFIX=
 	set PUBLIC_LABEL_PREFIX=
 	set INFO_FILE_SUFFIX=
+	set ERRORS_FILE_SUFFIX=
 
 	set batchName=
 	set fullBatchPath=
 	set infoFile=
+	set errorsFile=
 	set subroutineName=
 
-goto:eof
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void extractLine(String variableName, String linePattern, String file name)
+@rem ---
+@rem ---   Looks within the specified file for a matching line (i.e. a line which
+@rem ---   starts with the specified pattern) and assigns the line value to the
+@rem ---   specified variable.
+@rem ---
+
+:extractLine
+
+	set "variableName=%1"
+	if '%variableName%'=='' (
+
+		call:printErrorMessage "(%0) No variable name has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "variableName=%variableName:"=%"
+
+
+	set "linePattern=%2"
+	if '%linePattern%'=='' (
+
+		call:printErrorMessage "(%0) No line pattern has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "linePattern=%linePattern:"=%"
+
+
+	set "filename=%3"
+	if '%filename%'=='' (
+
+		call:printErrorMessage "(%0) No file name has been specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "filename=%filename:"=%"
+
+
+	setlocal EnableDelayedExpansion
+
+		for /f "delims=*" %%A in ('findstr /r /i /C:"^%linePattern%" "%filename%" 2^>nul') do (
+
+			set "line=%%A"
+			set "line=!line:%linePattern%=!"
+		)
+
+	endlocal & set "%variableName%=%line%"
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void printErrorMessage(String errorMessage)
+@rem ---
+@rem ---   Prints the specified error message to the console.
+@rem ---
+
+:printErrorMessage
+
+	%cprintln% Error: %~1 1>&2
+
+%return%
 
 
 @rem ================================================================================
@@ -1079,304 +1188,62 @@ goto:eof
 @rem ===   them from unforeseen errors.
 @rem ===
 
-
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   A prerequisite (constants) is missing.
+@rem ---   void handleError(String errorName)
+@rem ---
+@rem ---   A subroutine for handling errors.
 @rem ---
 
-:MISSING_CONSTANTS_ERROR
+:handleError
 
-echo Error: A prerequisite (constants) is missing! 1>&2
-call:cleanUp
+	set "CODE_SUFFIX=.code@"
+	set "MESSAGE_SUFFIX=.message@"
 
-exit /b 2
 
+	set "errorName=%1"
+	if '%errorName%'=='' (
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A prerequisite (macros) is missing.
-@rem ---
+		call:printErrorMessage "(%0) Errorhandling cannot proceed beacuse no error was specified!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
+	set "errorName=%errorName:"=%"
 
-:MISSING_MACROS_ERROR
+	set errorCodeKey=%errorName%%CODE_SUFFIX%
+	set errorMessageKey=%errorName%%MESSAGE_SUFFIX%
 
-echo Error: A prerequisite (macros) is missing! 1>&2
-call:cleanUp
 
-exit /b 3
+	set code=
+	call:extractLine code %errorCodeKey% %errorsFile%
+	if '%code%'=='' (
 
+		call:printErrorMessage "(%0) No error code has been specified for the error '%errorName%'!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   No subroutine has been specified.
-@rem ---
+	set message=
+	call:extractLine message %errorMessageKey% %errorsFile%
+	if "%message%"=="" (
 
-:NO_SUBROUTINE_ERROR
+		call:printErrorMessage "(%0) No error message has been specified for the error '%errorName%'!"
+		%return% %GENERIC_FRAMEWORK_ERROR%
+	)
 
-echo Error: No subroutine has been specified! 1>&2
-call:cleanUp
+	
+	call:PrintErrorMessage "%message%"
 
-exit /b 4
 
+	set CODE_SUFFIX=
+	set MESSAGE_SUFFIX=
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   An invalid subroutine has been specified.
-@rem ---
+	set errorName=
+	set errorCodeKey=
+	set errorMessageKey=
+	set message=
 
-:INVALID_SUBROUTINE_ERROR
+	call:cleanUp
 
-echo Error: No subroutine with the name "%1" exists! 1>&2
-call:cleanUp
-
-exit /b 5
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a parameter but none was specified.
-@rem ---
-
-:MISSING_PARAMETER_ERROR
-
-echo Error: The subroutine with the name "%0" expects a parameter but none was specified! 1>&2
-call:cleanUp
-
-exit /b 6
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a directory but none was specified.
-@rem ---
-
-:MISSING_BASE_DIRECTORY_ERROR
-
-echo Error: The subroutine with the name "%0" expects a directory but none was specified! 1>&2
-call:cleanUp
-
-exit /b 7
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a file name but none was specified.
-@rem ---
-
-:MISSING_FILE_NAME_ERROR
-
-echo Error: The subroutine with the name "%0" expects a file name but none was specified! 1>&2
-call:cleanUp
-
-exit /b 8
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a file pattern but none was specified.
-@rem ---
-
-:MISSING_FILE_PATTERNS_ERROR
-
-echo Error: The subroutine with the name "%0" expects a file pattern but none was specified! 1>&2
-call:cleanUp
-
-exit /b 9
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a path but none was specified.
-@rem ---
-
-:MISSING_PATH_ERROR
-
-echo Error: The subroutine with the name "%0" expects a path but none was specified! 1>&2
-call:cleanUp
-
-exit /b 10
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a path but none was specified.
-@rem ---
-
-:MISSING_DIRECTORY_NAME_ERROR
-
-echo Error: The subroutine with the name "%0" expects a directory name but none was specified! 1>&2
-call:cleanUp
-
-exit /b 11
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a variable name but none was specified.
-@rem ---
-
-:MISSING_VARIABLE_NAME_ERROR
-
-echo Error: The subroutine with the name "%0" expects a variable name but none was specified! 1>&2
-call:cleanUp
-
-exit /b 12
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a variable name but none was specified.
-@rem ---
-
-:MISSING_COMMAND_STRING_ERROR
-
-echo Error: The subroutine with the name "%0" expects a command string but none was specified! 1>&2
-call:cleanUp
-
-exit /b 13
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a target directory but none was specified.
-@rem ---
-
-:MISSING_TARGET_DIRECTORY_ERROR
-
-echo Error: The subroutine with the name "%0" expects a target directory but none was specified! 1>&2
-call:cleanUp
-
-exit /b 14
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a directory pattern but none was specified.
-@rem ---
-
-:MISSING_DIRECTORY_PATTERNS_ERROR
-
-echo Error: The subroutine with the name "%0" expects a directory pattern but none was specified! 1>&2
-call:cleanUp
-
-exit /b 15
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a prompt message but none was specified.
-@rem ---
-
-:MISSING_PROMPT_MESSAGE_ERROR
-
-echo Error: The subroutine with the name "%0" expects a prompt message but none was specified! 1>&2
-call:cleanUp
-
-exit /b 16
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   An invalid text was entered.
-@rem ---
-
-:INVALID_TEXT_ERROR
-
-echo Error: The subroutine with the name "%0" prompted for an input and the entered text is invalid! 1>&2
-call:cleanUp
-
-exit /b 17
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a message but none was specified.
-@rem ---
-
-:MISSING_MESSAGE_ERROR
-
-echo Error: The subroutine with the name "%0" expects a message but none was specified! 1>&2
-call:cleanUp
-
-exit /b 18
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects a program path but none was specified.
-@rem ---
-
-:MISSING_PROGRAM_PATH_ERROR
-
-echo Error: The subroutine with the name "%0" expects a program path but none was specified! 1>&2
-call:cleanUp
-
-exit /b 19
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects the name of an executable but none was specified.
-@rem ---
-
-:MISSING_EXECUTABLE_NAME_ERROR
-
-echo Error: The subroutine with the name "%0" expects the name of an executable but none was specified! 1>&2
-call:cleanUp
-
-exit /b 20
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine expects some parameters but none were specified.
-@rem ---
-
-:MISSING_PARAMETERS_ERROR
-
-echo Error: The subroutine with the name "%0" expects some parameters but none were specified! 1>&2
-call:cleanUp
-
-exit /b 21
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine tries to call a program which doesn't exist.
-@rem ---
-
-:NONEXISTANT_PROGRAM_ERROR
-
-echo Error: The subroutine with the name "%0" tries to call a program which doesn't exist! 1>&2
-call:cleanUp
-
-exit /b 22
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine tries to call a program which is no executable.
-@rem ---
-
-:NO_EXECUTABLE_SPECIFIED_ERROR
-
-echo Error: The subroutine with the name "%0" tries to call a program which is no executable! 1>&2
-call:cleanUp
-
-exit /b 23
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   A subroutine called an external program and an error occurred.
-@rem ---
-
-:FAILED_INVOCATION_ERROR
-
-echo Error: The subroutine with the name "%0" called an external program and an error occurred! 1>&2
-call:cleanUp
-
-exit /b 24
+%return% %code%
 
 
 @rem ================================================================================
@@ -1388,4 +1255,4 @@ exit /b 24
 
 call:cleanUp
 
-exit /b 0
+%return% %NO_ERROR%
