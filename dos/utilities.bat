@@ -67,7 +67,7 @@ set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 %ifError% (
 
-	call:handleError InvalidSubroutineError
+	call:handleError InvalidSubroutineError %subroutineName%
 	%return% %code%
 )
 
@@ -156,7 +156,7 @@ goto END
 	set "subroutine=%1"
 	if '%subroutine%'=='' (
 
-		call:handleError MissingParameterError
+		call:handleError MissingParameterError %0
 		%return% %code%
 	)
 	set "subroutine=%subroutine:"=%"
@@ -327,7 +327,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 	
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -340,7 +340,7 @@ goto END
 	call:checkAndAssignParameter fileName %2
 	%ifError% (
 	
-		call:handleError MissingFileNameError
+		call:handleError MissingFileNameError %0
 		%return% %code%
 	)
 
@@ -373,7 +373,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -386,7 +386,7 @@ goto END
 	call:checkAndAssignParameter filePatterns %2
 	%ifError% (
 
-		call:handleError MissingFilePatternsError
+		call:handleError MissingFilePatternsError %0
 		%return% %code%
 	)
 
@@ -417,7 +417,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -430,7 +430,7 @@ goto END
 	call:checkAndAssignParameter directoryName %2
 	%ifError% (
 
-		call:handleError MissingDirectoryNameError
+		call:handleError MissingDirectoryNameError %0
 		%return% %code%
 	)
 
@@ -463,7 +463,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -476,7 +476,7 @@ goto END
 	call:checkAndAssignParameter directoryPatterns %2
 	%ifError% (
 
-		call:handleError MissingDirectoryPatternsError
+		call:handleError MissingDirectoryPatternsError %0
 		%return% %code%
 	)
 
@@ -512,7 +512,7 @@ goto END
 	call:checkAndAssignParameter fullPath %1
 	%ifError% (
 
-		call:handleError MissingPathError
+		call:handleError MissingPathError %0
 		%return% %code%
 	)
 
@@ -617,14 +617,14 @@ goto END
 	call:checkAndAssignParameter variableName %1
 	%ifError% (
 
-		call:handleError MissingVariableNameError
+		call:handleError MissingVariableNameError %0
 		%return% %code%
 	)
 
 
 	if '%2'=='' (
 
-		call:handleError MissingCommandStringError
+		call:handleError MissingCommandStringError %0
 		%return% %code%
 	)
 
@@ -666,7 +666,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -736,7 +736,7 @@ goto END
 	call:checkAndAssignParameter baseDirectory %1
 	%ifError% (
 
-		call:handleError MissingBaseDirectoryError
+		call:handleError MissingBaseDirectoryError %0
 		%return% %code%
 	)
 
@@ -749,7 +749,7 @@ goto END
 	call:checkAndAssignParameter targetDirectory %2
 	%ifError% (
 
-		call:handleError MissingTargetDirectoryError
+		call:handleError MissingTargetDirectoryError %0
 		%return% %code%
 	)
 
@@ -762,7 +762,7 @@ goto END
 	call:checkAndAssignParameter directoryPatterns %3
 	%ifError% (
 
-		call:handleError MissingDirectoryPatternsError
+		call:handleError MissingDirectoryPatternsError %0
 		%return% %code%
 	)
 
@@ -829,14 +829,14 @@ goto END
 	call:checkAndAssignParameter promptMessage %1
 	%ifError% (
 
-		call:handleError MissingPromptMessageError
+		call:handleError MissingPromptMessageError %0
 		%return% %code%
 	)
 
 	call:inputText enteredText "%promptMessage%"
 	%ifError% (
 
-		call:handleError InvalidTextError
+		call:handleError InvalidTextError %0
 		%return% %code%
 	)
 
@@ -863,7 +863,7 @@ goto END
 	call:checkAndAssignParameter message %1
 	%ifError% (
 
-		call:handleError MissingMessageError
+		call:handleError MissingMessageError %0
 		%return% %code%
 	)
 
@@ -901,21 +901,21 @@ goto END
 	call:checkAndAssignParameter programPath %1
 	%ifError% (
 
-		call:handleError MissingProgramPathError
+		call:handleError MissingProgramPathError %0
 		%return% %code%
 	)
 
 	call:checkAndAssignParameter executableName %2
 	%ifError% (
 
-		call:handleError MissingExecutableNameError
+		call:handleError MissingExecutableNameError %0
 		%return% %code%
 	)
 
 	call:checkAndAssignParameter someParameters %3
 	%ifError% (
 
-		call:handleError MissingParametersError
+		call:handleError MissingParametersError %0
 		%return% %code%
 	)
 
@@ -930,7 +930,7 @@ goto END
 
 	if not exist "%programPath%%executableName%" (
 
-		call:handleError NonexistantError
+		call:handleError NonexistantProgramError %0
 		%return% %code%
 	)
 
@@ -958,7 +958,8 @@ goto END
 
 			) else (
 
-				goto NO_EXECUTABLE_SPECIFIED_ERROR
+				call:handleError NoExecutableSpecifiedError %0
+				%return% %code%
 			)
 		)
 	)
@@ -968,7 +969,7 @@ goto END
 	%invocationPrefix% "%programPath%%executableName%" %someParameters%
 	%ifError% (
 
-		call:handleError FailedInvocationError
+		call:handleError FailedInvocationError %0
 		%return% %code%
 	)
 
@@ -1190,9 +1191,11 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void handleError(String errorName)
+@rem ---   void handleError(String errorName, String... someDetails)
 @rem ---
-@rem ---   A subroutine for handling errors.
+@rem ---   A subroutine for handling errors. The first parameter is the error
+@rem ---   identifier. Additionally further details can be specified which will be
+@rem ---   included in the error message.
 @rem ---
 
 :handleError
@@ -1229,7 +1232,34 @@ goto END
 		%return% %GENERIC_FRAMEWORK_ERROR%
 	)
 
+
+	setlocal EnableDelayedExpansion
+
+	set "tmp=%message%"
+	shift
+
+	set i=1
+
+:handleError_loop
+
+	if "%1"=="" (
+
+		goto handleError_showMessage
+	)
+
+	set placeholder={%i%}
+
+	set tmp=!tmp:%placeholder%=%1%!
 	
+	shift
+	set /A i=i+1
+
+	goto handleError_loop
+
+:handleError_showMessage
+
+	endlocal & set "message=%tmp%"
+
 	call:PrintErrorMessage "%message%"
 
 

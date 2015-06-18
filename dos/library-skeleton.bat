@@ -67,7 +67,7 @@ set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 %ifError% (
 
-	call:handleError InvalidSubroutineError
+	call:handleError InvalidSubroutineError %subroutineName%
 	%return% %code%
 )
 
@@ -134,7 +134,7 @@ goto END
 	set "subroutine=%1"
 	if '%subroutine%'=='' (
 
-		call:handleError MissingParameterError
+		call:handleError MissingParameterError %0
 		%return% %code%
 	)
 	set "subroutine=%subroutine:"=%"
@@ -296,9 +296,11 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void handleError(String errorName)
+@rem ---   void handleError(String errorName, String... someDetails)
 @rem ---
-@rem ---   A subroutine for handling errors.
+@rem ---   A subroutine for handling errors. The first parameter is the error
+@rem ---   identifier. Additionally further details can be specified which will be
+@rem ---   included in the error message.
 @rem ---
 
 :handleError
@@ -335,6 +337,33 @@ goto END
 		%return% %GENERIC_FRAMEWORK_ERROR%
 	)
 
+
+	setlocal EnableDelayedExpansion
+
+	set "tmp=%message%"
+	shift
+
+	set i=1
+
+:handleError_loop
+
+	if "%1"=="" (
+
+		goto handleError_showMessage
+	)
+
+	set placeholder={%i%}
+
+	set tmp=!tmp:%placeholder%=%1%!
+	
+	shift
+	set /A i=i+1
+
+	goto handleError_loop
+
+:handleError_showMessage
+
+	endlocal & set "message=%tmp%"
 	
 	call:PrintErrorMessage "%message%"
 

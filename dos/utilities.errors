@@ -20,8 +20,8 @@ MissingBaseDirectoryError.message@The subroutine with the name {1} expects a dir
 MissingFileNameError.code@9
 MissingFileNameError.message@The subroutine with the name {1} expects a file name but none was specified!
 
-MissingFilePatternError.code@10
-MissingFilePatternError.message@The subroutine with the name {1} expects a file pattern but none was specified!
+MissingFilePatternsError.code@10
+MissingFilePatternsError.message@The subroutine with the name {1} expects a file pattern but none was specified!
 
 MissingPathError.code@11
 MissingPathError.message@The subroutine with the name {1} expects a path but none was specified!
@@ -62,8 +62,8 @@ MissingParametersError.message@The subroutine with the name {1} expects some par
 NonexistantProgramError.code@23
 NonexistantProgramError.message@The subroutine with the name {1} tries to call a program which doesn't exist!
 
-NoExecutableSPecifiedError.code@24
-NoExecutableSPecifiedError.message@The subroutine with the name {1} tries to call a program which is no executable!
+NoExecutableSpecifiedError.code@24
+NoExecutableSpecifiedError.message@The subroutine with the name {1} tries to call a program which is no executable!
 
-FailedInvoactionError.code@25
-FailedInvoactionError.message@The subroutine with the name {1} called an external program and an error occurred!
+FailedInvocationError.code@25
+FailedInvocationError.message@The subroutine with the name {1} called an external program and an error occurred!
