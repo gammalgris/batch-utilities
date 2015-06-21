@@ -29,6 +29,7 @@ if "%ERRORLEVEL%"=="0" (
 ) else (
 
 	call:handleError MissingConstantsError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -40,6 +41,7 @@ if "%ERRORLEVEL%"=="0" (
 ) else (
 
 	call:handleError MissingMacrosError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -56,6 +58,7 @@ if "%ERRORLEVEL%"=="0" (
 if "%1"=="" (
 
 	call:handleError NoSubroutineError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -68,6 +71,7 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 %ifError% (
 
 	call:handleError InvalidSubroutineError %subroutineName%
+	call:cleanUp
 	%return% %code%
 )
 
@@ -157,6 +161,7 @@ goto END
 	if '%subroutine%'=='' (
 
 		call:handleError MissingParameterError %0
+		call:cleanUp
 		%return% %code%
 	)
 	set "subroutine=%subroutine:"=%"
@@ -217,6 +222,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingParameterError
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -271,6 +277,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingParameterError
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -328,6 +335,7 @@ goto END
 	%ifError% (
 	
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -341,6 +349,7 @@ goto END
 	%ifError% (
 	
 		call:handleError MissingFileNameError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -374,6 +383,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -387,6 +397,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingFilePatternsError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -418,6 +429,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -431,6 +443,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingDirectoryNameError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -464,6 +477,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -477,6 +491,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingDirectoryPatternsError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -513,6 +528,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingPathError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -561,6 +577,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingParameterError
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -618,6 +635,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingVariableNameError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -625,6 +643,7 @@ goto END
 	if '%2'=='' (
 
 		call:handleError MissingCommandStringError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -667,6 +686,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -680,6 +700,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissinTargetDirectoryError
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -693,6 +714,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingFilePatternsError
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -737,6 +759,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -750,6 +773,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingTargetDirectoryError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -763,6 +787,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingDirectoryPatternsError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -830,6 +855,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingPromptMessageError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -837,6 +863,7 @@ goto END
 	%ifError% (
 
 		call:handleError InvalidTextError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -864,6 +891,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingMessageError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -902,6 +930,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingProgramPathError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -909,6 +938,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingExecutableNameError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -916,6 +946,7 @@ goto END
 	%ifError% (
 
 		call:handleError MissingParametersError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -931,6 +962,7 @@ goto END
 	if not exist "%programPath%%executableName%" (
 
 		call:handleError NonexistantProgramError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -959,6 +991,7 @@ goto END
 			) else (
 
 				call:handleError NoExecutableSpecifiedError %0
+				call:cleanUp
 				%return% %code%
 			)
 		)
@@ -970,6 +1003,7 @@ goto END
 	%ifError% (
 
 		call:handleError FailedInvocationError %0
+		call:cleanUp
 		%return% %code%
 	)
 
@@ -1270,8 +1304,6 @@ goto END
 	set errorCodeKey=
 	set errorMessageKey=
 	set message=
-
-	call:cleanUp
 
 %return% %code%
 

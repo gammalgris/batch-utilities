@@ -29,6 +29,7 @@ if "%ERRORLEVEL%"=="0" (
 ) else (
 
 	call:handleError MissingConstantsError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -40,6 +41,7 @@ if "%ERRORLEVEL%"=="0" (
 ) else (
 
 	call:handleError MissingMacrosError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -56,6 +58,7 @@ if "%ERRORLEVEL%"=="0" (
 if "%1"=="" (
 
 	call:handleError NoSubroutineError
+	call:cleanUp
 	%return% %code%
 )
 
@@ -68,6 +71,7 @@ findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 %ifError% (
 
 	call:handleError InvalidSubroutineError %subroutineName%
+	call:cleanUp
 	%return% %code%
 )
 
@@ -135,6 +139,7 @@ goto END
 	if '%subroutine%'=='' (
 
 		call:handleError MissingParameterError %0
+		call:cleanUp
 		%return% %code%
 	)
 	set "subroutine=%subroutine:"=%"
@@ -375,8 +380,6 @@ goto END
 	set errorCodeKey=
 	set errorMessageKey=
 	set message=
-
-	call:cleanUp
 
 %return% %code%
 
