@@ -1,69 +1,69 @@
 
 MissingConstantsError.code@3
-MissingConstantsError.message@A prerequisite (constants) is missing!
+MissingConstantsError.message@A prerequisite (constants) is missing^^^!
 
 MissingMacrosError.code@4
-MissingMacrosError.message@A prerequisite (macros) is missing!
+MissingMacrosError.message@A prerequisite (macros) is missing^^^!
 
 NoSubroutineError.code@5
-NoSubroutineError.message@No subroutine has been specified!
+NoSubroutineError.message@No subroutine has been specified^^^!
 
 InvalidSubroutineError.code@6
-InvalidSubroutineError.message@No subroutine with the name {1} exists!
+InvalidSubroutineError.message@No subroutine with the name {1} exists^^^!
 
 MissingParameterError.code@7
-MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified!
+MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified^^^!
 
 MissingBaseDirectoryError.code@8
-MissingBaseDirectoryError.message@The subroutine with the name {1} expects a directory but none was specified!
+MissingBaseDirectoryError.message@The subroutine with the name {1} expects a directory but none was specified^^^!
 
 MissingFileNameError.code@9
-MissingFileNameError.message@The subroutine with the name {1} expects a file name but none was specified!
+MissingFileNameError.message@The subroutine with the name {1} expects a file name but none was specified^^^!
 
 MissingFilePatternsError.code@10
-MissingFilePatternsError.message@The subroutine with the name {1} expects a file pattern but none was specified!
+MissingFilePatternsError.message@The subroutine with the name {1} expects a file pattern but none was specified^^^!
 
 MissingPathError.code@11
-MissingPathError.message@The subroutine with the name {1} expects a path but none was specified!
+MissingPathError.message@The subroutine with the name {1} expects a path but none was specified^^^!
 
 MissingDirectoryNameError.code@12
-MissingDirectoryNameError.message@The subroutine with the name {1} expects a directory name but none was specified!
+MissingDirectoryNameError.message@The subroutine with the name {1} expects a directory name but none was specified^^^!
 
 MissingVariableNameError.code@13
-MissingVariableNameError.message@The subroutine with the name {1} expects a variable name but none was specified!
+MissingVariableNameError.message@The subroutine with the name {1} expects a variable name but none was specified^^^!
 
 MissingCommandStringError.code@14
-MissingCommandStringError.message@The subroutine with the name {1} expects a command string but none was specified!
+MissingCommandStringError.message@The subroutine with the name {1} expects a command string but none was specified^^^!
 
 MissingTargetDirectoryError.code@15
-MissingTargetDirectoryError.message@The subroutine with the name {1} expects a target directory but none was specified!
+MissingTargetDirectoryError.message@The subroutine with the name {1} expects a target directory but none was specified^^^!
 
 MissingDirectoryPatternsError.code@16
-MissingDirectoryPatternsError.message@The subroutine with the name {1} expects a directory pattern but none was specified!
+MissingDirectoryPatternsError.message@The subroutine with the name {1} expects a directory pattern but none was specified^^^!
 
 MissingPromptMessageError.code@17
-MissingPromptMessageError.message@The subroutine with the name {1} expects a prompt message but none was specified!
+MissingPromptMessageError.message@The subroutine with the name {1} expects a prompt message but none was specified^^^!
 
 InvalidTextError.code@18
-InvalidTextError.message@The subroutine with the name {1} prompted for an input and the entered text is invalid!
+InvalidTextError.message@The subroutine with the name {1} prompted for an input and the entered text is invalid^^^!
 
 MissingMessageError.code@19
-MissingMessageError.message@The subroutine with the name {1} expects a message but none was specified!
+MissingMessageError.message@The subroutine with the name {1} expects a message but none was specified^^^!
 
 MissingProgramPathError.code@20
-MissingProgramPathError.message@The subroutine with the name {1} expects a program path but none was specified!
+MissingProgramPathError.message@The subroutine with the name {1} expects a program path but none was specified^^^!
 
 MissingExecutableNameError.code@21
-MissingExecutableNameError.message@The subroutine with the name {1} expects the name of an executable but none was specified!
+MissingExecutableNameError.message@The subroutine with the name {1} expects the name of an executable but none was specified^^^!
 
 MissingParametersError.code@22
-MissingParametersError.message@The subroutine with the name {1} expects some parameters but none were specified!
+MissingParametersError.message@The subroutine with the name {1} expects some parameters but none were specified^^^!
 
 NonexistantProgramError.code@23
-NonexistantProgramError.message@The subroutine with the name {1} tries to call a program which doesn't exist!
+NonexistantProgramError.message@The subroutine with the name {1} tries to call a program which doesn't exist^^^!
 
 NoExecutableSpecifiedError.code@24
-NoExecutableSpecifiedError.message@The subroutine with the name {1} tries to call a program which is no executable!
+NoExecutableSpecifiedError.message@The subroutine with the name {1} tries to call a program which is no executable^^^!
 
 FailedInvocationError.code@25
-FailedInvocationError.message@The subroutine with the name {1} called an external program and an error occurred!
+FailedInvocationError.message@The subroutine with the name {1} called an external program and an error occurred^^^!

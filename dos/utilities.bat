@@ -1276,14 +1276,14 @@ goto END
 
 :handleError_loop
 
-	if "%1"=="" (
+	if "%~1"=="" (
 
 		goto handleError_showMessage
 	)
 
 	set placeholder={%i%}
 
-	set tmp=!tmp:%placeholder%=%1%!
+	set tmp=!tmp:%placeholder%='%~1%'!
 	
 	shift
 	set /A i=i+1

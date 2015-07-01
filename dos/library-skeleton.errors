@@ -1,15 +1,15 @@
 
 MissingConstantsError.code@3
-MissingConstantsError.message@A prerequisite (constants) is missing!
+MissingConstantsError.message@A prerequisite (constants) is missing^^^!
 
 MissingMacrosError.code@4
-MissingMacrosError.message@A prerequisite (macros) is missing!
+MissingMacrosError.message@A prerequisite (macros) is missing^^^!
 
 NoSubroutineError.code@5
-NoSubroutineError.message@No subroutine has been specified!
+NoSubroutineError.message@No subroutine has been specified^^^!
 
 InvalidSubroutineError.code@6
-InvalidSubroutineError.message@No subroutine with the name {1} exists!
+InvalidSubroutineError.message@No subroutine with the name {1} exists^^^!
 
 MissingParameterError.code@7
-MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified!
+MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified^^^!
