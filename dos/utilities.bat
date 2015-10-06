@@ -6,8 +6,7 @@
 @rem ---   Initialization
 @rem ---
 
-set INFO_FILE_SUFFIX=.info
-set ERRORS_FILE_SUFFIX=.errors
+call:setUp
 
 set "batchName=%0"
 set "fullBatchPath=%~dpnx0"
@@ -30,7 +29,7 @@ if "%ERRORLEVEL%"=="0" (
 
 	call:handleError MissingConstantsError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 call define-macros.bat
@@ -42,7 +41,7 @@ if "%ERRORLEVEL%"=="0" (
 
 	call:handleError MissingMacrosError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 
@@ -50,29 +49,21 @@ if "%ERRORLEVEL%"=="0" (
 @rem ---
 @rem ---   Check the specified subroutine.
 @rem ---
-@rem ---   See
-@rem ---   1) http://stackoverflow.com/questions/834882/recovering-from-an-invalid-goto-command-in-a-windows-batch-file
-@rem ---   2) http://stackoverflow.com/questions/1645843/resolve-absolute-path-from-relative-path-and-or-file-name
-@rem ---
 
 if "%1"=="" (
 
 	call:handleError NoSubroutineError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
-
-set LABEL_PREFIX=:
-set PUBLIC_PREFIX=PUBLIC_
-set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" "%~dpnx0" > nul
 %ifError% (
 
 	call:handleError InvalidSubroutineError %subroutineName%
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 
@@ -106,27 +97,12 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===     This needs further investigation.
 @rem ===
 
-@rem ===
-@rem ===   General Resources
-@rem ===
-@rem ===   1) http://www.robvanderwoude.com/escapechars.php
-@rem ===   2) http://www.dostips.com/DtTipsStringManipulation.php
-@rem ===   3) http://ss64.com/nt/delayedexpansion.html
-@rem ===   4) http://stackoverflow.com/questions/3215501/batch-remove-file-extension
-@rem ===   5) http://stackoverflow.com/questions/17063947/get-current-batchfile-directory
-@rem ===   6) http://stackoverflow.com/questions/8797983/can-a-dos-batch-file-determine-its-own-file-name
-@rem ===   7) http://stackoverflow.com/questions/6359318/how-do-i-send-a-message-to-stderr-from-cmd
-@rem ===
-
 
 @rem --------------------------------------------------------------------------------
 @rem ---
 @rem ---   void listSubroutines()
 @rem ---
 @rem ---   Lists all subroutines which are defined within this utility library.
-@rem ---
-@rem ---   See
-@rem ---   1) http://stackoverflow.com/questions/10960467/windows-batch-delayed-expansion-in-a-for-loop
 @rem ---
 
 :PUBLIC_listSubroutines
@@ -150,23 +126,27 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void info(String subroutine)
+@rem ---   void info(String subroutineName)
 @rem ---
 @rem ---   Prints the info screen for the specified subroutine.
+@rem ---
+@rem ---
+@rem ---   @param subroutineName
+@rem ---          the name of a subroutine (without the internal prefix)
 @rem ---
 
 :PUBLIC_info
 
-	set "subroutine=%1"
-	if '%subroutine%'=='' (
+	set "subroutineName=%1"
+	if '%subroutineName%'=='' (
 
 		call:handleError MissingParameterError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
-	set "subroutine=%subroutine:"=%"
+	set "subroutineName=%subroutineName:"=%"
 
-	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutine%%SPACE%"
+	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutineName%%SPACE%"
 	set BATCH_NAME_PATTERN={batch-name}
 	set TABULATOR_PATTERN={tab}
 
@@ -197,7 +177,7 @@ goto END
 	set BATCH_NAME_PATTERN=
 
 	set prefix=
-	set subroutine=
+	set subroutineName=
 
 goto END
 
@@ -215,6 +195,10 @@ goto END
 @rem ---      MM      Month in year
 @rem ---      dd      Day in year
 @rem ---
+@rem ---
+@rem ---   @param datePattern
+@rem ---          a date pattern (see above)
+@rem ---
 
 :PUBLIC_today
 
@@ -223,7 +207,7 @@ goto END
 
 		call:handleError MissingParameterError
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	set YEAR_PATTERN=yyyy
@@ -270,6 +254,10 @@ goto END
 @rem ---      ss      Second in minute
 @rem ---      ff      seconds fraction
 @rem ---
+@rem ---
+@rem ---   @param timePattern
+@rem ---          a time pattern (see above)
+@rem ---
 
 :PUBLIC_now
 
@@ -278,7 +266,7 @@ goto END
 
 		call:handleError MissingParameterError
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	set HOUR_PATTERN=HH
@@ -325,8 +313,11 @@ goto END
 @rem ---   A subroutine which looks for files with the specified name at the
 @rem ---   specified location and prints a list of matching files to the console.
 @rem ---
-@rem ---   See
-@rem ---   1) http://stackoverflow.com/questions/12712905/how-to-check-if-the-user-input-ends-with-a-specific-string-in-batch-bat-scrip
+@rem ---   
+@rem ---   @param baseDirectory
+@rem ---          a base directory which is to be searched
+@rem ---   @param fileName
+@rem ---          a file name
 @rem ---
 
 :PUBLIC_findFile
@@ -336,7 +327,7 @@ goto END
 	
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -350,7 +341,7 @@ goto END
 	
 		call:handleError MissingFileNameError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -376,6 +367,12 @@ goto END
 @rem ---
 @rem ---   A file pattern is provided as a quoted list (e.g. ".pdf .txt .csv").
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          a base directory which is to be searched
+@rem ---   @param filePatterns
+@rem ---          a set of file name patterns
+@rem ---
 
 :PUBLIC_findFileSets
 
@@ -384,7 +381,7 @@ goto END
 
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -398,7 +395,7 @@ goto END
 
 		call:handleError MissingFilePatternsError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -422,6 +419,12 @@ goto END
 @rem ---   specified location and prints a list of matching directories to the
 @rem ---   console.
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          a base directory which is to be searched
+@rem ---   @param directoryName
+@rem ---          a directory name
+@rem ---
 
 :PUBLIC_findDirectory
 
@@ -430,7 +433,7 @@ goto END
 
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -444,7 +447,7 @@ goto END
 
 		call:handleError MissingDirectoryNameError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -470,6 +473,12 @@ goto END
 @rem ---
 @rem ---   A directory pattern is provided as a quoted list (e.g. "test1 test2").
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          a base directory which is to be searched
+@rem ---   @param directoryPatterns
+@rem ---          a set of directory name patterns
+@rem ---
 
 :PUBLIC_findDirectorySets
 
@@ -478,7 +487,7 @@ goto END
 
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -492,7 +501,7 @@ goto END
 
 		call:handleError MissingDirectoryPatternsError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -521,6 +530,10 @@ goto END
 @rem ---      2) directory   the path represents a directory
 @rem ---      3) invalid     the path doesn't represent an existing file or directory
 @rem ---
+@rem ---
+@rem ---   @param fullPath
+@rem ---          the full path of a file or directory
+@rem ---
 
 :PUBLIC_checkFile
 
@@ -529,7 +542,7 @@ goto END
 
 		call:handleError MissingPathError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -570,6 +583,10 @@ goto END
 @rem ---   The subroutine determines the length of the specified string and prints
 @rem ---   the result to the console.
 @rem ---
+@rem ---
+@rem ---   @param string
+@rem ---          a string
+@rem ---
 
 :PUBLIC_stringLength
 
@@ -578,7 +595,7 @@ goto END
 
 		call:handleError MissingParameterError
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -628,6 +645,13 @@ goto END
 @rem ---
 @rem ---   - an alternaive implementation assignArrayResult is required.
 @rem ---
+@rem ---
+@rem ---   @param variableName
+@rem ---          the name of a variable
+@rem ---   @param commandString
+@rem ---          a string representing a command invocation, including passed
+@rem ---          parameters
+@rem ---
 
 :PUBLIC_assignResult
 
@@ -636,7 +660,7 @@ goto END
 
 		call:handleError MissingVariableNameError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -644,7 +668,7 @@ goto END
 
 		call:handleError MissingCommandStringError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -679,6 +703,14 @@ goto END
 @rem ---   All files that match the specified file patterns are copied from the
 @rem ---   specified base directory to the specified target directory.
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          the source directory
+@rem ---   @param targetDirectory
+@rem ---          the target directory
+@rem ---   @param filePatterns
+@rem ---          a set of file name patterns
+@rem ---
 
 :PUBLIC_copyFiles
 
@@ -687,7 +719,7 @@ goto END
 
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -701,7 +733,7 @@ goto END
 
 		call:handleError MissinTargetDirectoryError
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
@@ -715,7 +747,7 @@ goto END
 
 		call:handleError MissingFilePatternsError
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -752,6 +784,14 @@ goto END
 @rem ---
 @rem ---   A set of directory patterns is provided as a quoted list (e.g. "test1 test2").
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          the source directory
+@rem ---   @param targetDirectory
+@rem ---          the target directory
+@rem ---   @param directoryPatterns
+@rem ---          a set of directory name patterns
+@rem ---
 
 :PUBLIC_copyDirectories
 
@@ -760,7 +800,7 @@ goto END
 
 		call:handleError MissingBaseDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
@@ -774,7 +814,7 @@ goto END
 
 		call:handleError MissingTargetDirectoryError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	if "%targetDirectory:~-1%" neq "%BACKSLASH%" (
@@ -788,7 +828,7 @@ goto END
 
 		call:handleError MissingDirectoryPatternsError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -822,8 +862,16 @@ goto END
 @rem ---   The subroutine lists all directories within the specified base directory
 @rem ---   which are older than the specified number of days.
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          the base directoy
+@rem ---   @param numberOfDays
+@rem ---          a threshold to identify old files
+@rem ---
 
 :PUBLIC_listOldDirectories
+
+	@rem TODO
 
 goto END
 
@@ -835,8 +883,16 @@ goto END
 @rem ---   The subroutine deletes all directories within the specified base directory
 @rem ---   which are older than the specified number of days.
 @rem ---
+@rem ---
+@rem ---   @param baseDirectory
+@rem ---          the base directoy
+@rem ---   @param numberOfDays
+@rem ---          a threshold to identify old directories
+@rem ---
 
 :PUBLIC_deleteOldDirectories
+
+	@rem TODO
 
 goto END
 
@@ -848,6 +904,10 @@ goto END
 @rem ---   The subroutine prompts the user to enter a text. The text is printed to
 @rem ---   the console.
 @rem ---
+@rem ---
+@rem ---   @param promptMessage
+@rem ---          a prompt message
+@rem ---
 
 :PUBLIC_inputText
 
@@ -856,7 +916,7 @@ goto END
 
 		call:handleError MissingPromptMessageError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	call:inputText enteredText "%promptMessage%"
@@ -864,7 +924,7 @@ goto END
 
 		call:handleError InvalidTextError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	%cprintln% %enteredText%
@@ -881,8 +941,14 @@ goto END
 @rem ---   void logMessage(String message)
 @rem ---   void logMessage(String message, String outputFile)
 @rem ---
-@rem ---   The subroutine prints the specified message to the console. If a output
-@rem ---   has been specified then the message will be written to a file as well.
+@rem ---   The subroutine prints the specified message to the console. If an output
+@rem ---   file has been specified then the message will be written to a file as well.
+@rem ---
+@rem ---
+@rem ---   @param message
+@rem ---          a log message
+@rem ---   @param outputFile
+@rem ---          (optional) the name of an output file
 @rem ---
 
 :PUBLIC_logMessage
@@ -892,7 +958,7 @@ goto END
 
 		call:handleError MissingMessageError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	call:inputText outputFile %2
@@ -923,6 +989,19 @@ goto END
 @rem ---   several plausibility checks are performed (e.g. Does it exist? Is it a batch file?
 @rem ---   etc.).
 @rem ---
+@rem ---
+@rem ---   TODO
+@rem ---   The subroutine can be trimmed with the use of shift and %* to pass all remaining
+@rem ---   parameters.
+@rem ---
+@rem ---
+@rem ---   @param programPath
+@rem ---          the path where to find the executable
+@rem ---   @param executableName
+@rem ---          the name of the execuatble
+@rem ---   @param someParameters
+@rem ---          all parameters that are to be passed on invocation
+@rem ---
 
 :PUBLIC_callProgram
 
@@ -931,7 +1010,7 @@ goto END
 
 		call:handleError MissingProgramPathError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	call:checkAndAssignParameter executableName %2
@@ -939,7 +1018,7 @@ goto END
 
 		call:handleError MissingExecutableNameError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	call:checkAndAssignParameter someParameters %3
@@ -947,7 +1026,7 @@ goto END
 
 		call:handleError MissingParametersError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	%cprintln% DEBUG::program path ...... %programPath%
@@ -963,7 +1042,7 @@ goto END
 
 		call:handleError NonexistantProgramError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 	set "foundSuffix=%executableName:~-4%"
@@ -992,7 +1071,7 @@ goto END
 
 				call:handleError NoExecutableSpecifiedError %0
 				call:cleanUp
-				%return% %code%
+				%return% %returnCode%
 			)
 		)
 	)
@@ -1004,7 +1083,7 @@ goto END
 
 		call:handleError FailedInvocationError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
 
 
@@ -1047,6 +1126,15 @@ goto END
 @rem ---   This internal subroutine doesn't check the specified parameters because
 @rem ---   it expects them to be provided correctly by the caller. Additional
 @rem ---   checks might be necessary to make the subroutine more robust, though.
+@rem ---
+@rem ---   TODO
+@rem ---   There are still some issues with parameters that contain spaces and ".
+@rem ---
+@rem ---
+@rem ---   @param _variableName
+@rem ---          the name of a variable
+@rem ---   @param _value
+@rem ---          the value which is to assigned to the specified variable
 @rem ---
 
 :checkAndAssignParameter
@@ -1091,6 +1179,12 @@ goto END
 @rem ---   The subroutine prompts the user to enter a text and stores the text in
 @rem ---   the specified variable.
 @rem ---
+@rem ---
+@rem ---   @param _variableName
+@rem ---          the name of a variable
+@rem ---   @param _promptMessage
+@rem ---          a prompt message
+@rem ---
 
 :inputText
 
@@ -1127,6 +1221,27 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   void setUp()
+@rem ---
+@rem ---   Initializes internally used constants. This subroutine is called at the
+@rem ---   start of the script (i.e. macros and constants may not be available when
+@rem ---   called).
+@rem ---
+
+:setUp
+
+	set INFO_FILE_SUFFIX=.info
+	set ERRORS_FILE_SUFFIX=.errors
+
+	set LABEL_PREFIX=:
+	set PUBLIC_PREFIX=PUBLIC_
+	set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
+
+exit /b
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   void cleanUp()
 @rem ---
 @rem ---   Deletes internally used variables. This subroutine is called before
@@ -1157,6 +1272,14 @@ goto END
 @rem ---   Looks within the specified file for a matching line (i.e. a line which
 @rem ---   starts with the specified pattern) and assigns the line value to the
 @rem ---   specified variable.
+@rem ---
+@rem ---
+@rem ---   @param variableName
+@rem ---          the name of a variable
+@rem ---   @param linePattern
+@rem ---          a search pattern
+@rem ---   @param fileName
+@rem ---          the name of the file which is searched
 @rem ---
 
 :extractLine
@@ -1207,6 +1330,10 @@ goto END
 @rem ---
 @rem ---   Prints the specified error message to the console.
 @rem ---
+@rem ---
+@rem ---   @param errorMessage
+@rem ---          an error message
+@rem ---
 
 :printErrorMessage
 
@@ -1231,6 +1358,12 @@ goto END
 @rem ---   identifier. Additionally further details can be specified which will be
 @rem ---   included in the error message.
 @rem ---
+@rem ---
+@rem ---   @param errorName
+@rem ---          the identifier for an error
+@rem ---   @param someDetails
+@rem ---          additional details which added to the error message
+@rem ---
 
 :handleError
 
@@ -1250,9 +1383,9 @@ goto END
 	set errorMessageKey=%errorName%%MESSAGE_SUFFIX%
 
 
-	set code=
-	call:extractLine code %errorCodeKey% %errorsFile%
-	if '%code%'=='' (
+	set returnCode=
+	call:extractLine returnCode %errorCodeKey% %errorsFile%
+	if '%returnCode%'=='' (
 
 		call:printErrorMessage "(%0) No error code has been specified for the error '%errorName%'!"
 		%return% %GENERIC_FRAMEWORK_ERROR%
@@ -1305,7 +1438,7 @@ goto END
 	set errorMessageKey=
 	set message=
 
-%return% %code%
+%return% %returnCode%
 
 
 @rem ================================================================================

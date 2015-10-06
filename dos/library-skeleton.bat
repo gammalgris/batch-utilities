@@ -6,8 +6,7 @@
 @rem ---   Initialization
 @rem ---
 
-set INFO_FILE_SUFFIX=.info
-set ERRORS_FILE_SUFFIX=.errors
+call:setUp
 
 set "batchName=%0"
 set "fullBatchPath=%~dpnx0"
@@ -30,7 +29,7 @@ if "%ERRORLEVEL%"=="0" (
 
 	call:handleError MissingConstantsError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 call define-macros.bat
@@ -42,7 +41,7 @@ if "%ERRORLEVEL%"=="0" (
 
 	call:handleError MissingMacrosError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 
@@ -50,29 +49,21 @@ if "%ERRORLEVEL%"=="0" (
 @rem ---
 @rem ---   Check the specified subroutine.
 @rem ---
-@rem ---   See
-@rem ---   1) http://stackoverflow.com/questions/834882/recovering-from-an-invalid-goto-command-in-a-windows-batch-file
-@rem ---   2) http://stackoverflow.com/questions/1645843/resolve-absolute-path-from-relative-path-and-or-file-name
-@rem ---
 
 if "%1"=="" (
 
 	call:handleError NoSubroutineError
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
-
-set LABEL_PREFIX=:
-set PUBLIC_PREFIX=PUBLIC_
-set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
 
 findstr /r /i /c:"^%PUBLIC_LABEL_PREFIX%%1" %~dpnx0>nul
 %ifError% (
 
 	call:handleError InvalidSubroutineError %subroutineName%
 	call:cleanUp
-	%return% %code%
+	%return% %returnCode%
 )
 
 
@@ -85,26 +76,11 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===   Public Subroutines
 @rem ===
 
-@rem ===
-@rem ===   General Resources
-@rem ===
-@rem ===   1) http://www.robvanderwoude.com/escapechars.php
-@rem ===   2) http://www.dostips.com/DtTipsStringManipulation.php
-@rem ===   3) http://ss64.com/nt/delayedexpansion.html
-@rem ===   4) http://stackoverflow.com/questions/3215501/batch-remove-file-extension
-@rem ===   5) http://stackoverflow.com/questions/17063947/get-current-batchfile-directory
-@rem ===   6) http://stackoverflow.com/questions/8797983/can-a-dos-batch-file-determine-its-own-file-name
-@rem ===   7) http://stackoverflow.com/questions/6359318/how-do-i-send-a-message-to-stderr-from-cmd
-@rem ===
-
 @rem --------------------------------------------------------------------------------
 @rem ---
 @rem ---   void listSubroutines()
 @rem ---
 @rem ---   Lists all subroutines which are defined within this utility library.
-@rem ---
-@rem ---   See
-@rem ---   1) http://stackoverflow.com/questions/10960467/windows-batch-delayed-expansion-in-a-for-loop
 @rem ---
 
 :PUBLIC_listSubroutines
@@ -128,23 +104,27 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void info(String subroutine)
+@rem ---   void info(String subroutineName)
 @rem ---
 @rem ---   Prints the info screen for the specified subroutine.
+@rem ---
+@rem ---
+@rem ---   @param subroutineName
+@rem ---          the name of a subroutine (without the internal prefix)
 @rem ---
 
 :PUBLIC_info
 
-	set "subroutine=%1"
-	if '%subroutine%'=='' (
+	set "subroutineName=%1"
+	if '%subroutineName%'=='' (
 
 		call:handleError MissingParameterError %0
 		call:cleanUp
-		%return% %code%
+		%return% %returnCode%
 	)
-	set "subroutine=%subroutine:"=%"
+	set "subroutineName=%subroutineName:"=%"
 
-	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutine%%SPACE%"
+	set "prefix=%PUBLIC_LABEL_PREFIX%%subroutineName%%SPACE%"
 	set BATCH_NAME_PATTERN={batch-name}
 	set TABULATOR_PATTERN={tab}
 
@@ -175,7 +155,7 @@ goto END
 	set BATCH_NAME_PATTERN=
 
 	set prefix=
-	set subroutine=
+	set subroutineName=
 
 goto END
 
@@ -203,6 +183,27 @@ goto END
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   void setUp()
+@rem ---
+@rem ---   Initializes internally used constants. This subroutine is called at the
+@rem ---   start of the script (i.e. macros and constants may not be available when
+@rem ---   called).
+@rem ---
+
+:setUp
+
+	set INFO_FILE_SUFFIX=.info
+	set ERRORS_FILE_SUFFIX=.errors
+
+	set LABEL_PREFIX=:
+	set PUBLIC_PREFIX=PUBLIC_
+	set PUBLIC_LABEL_PREFIX=%LABEL_PREFIX%%PUBLIC_PREFIX%
+
+exit /b
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   void cleanUp()
 @rem ---
 @rem ---   Deletes internally used variables. This subroutine is called before
@@ -214,6 +215,7 @@ goto END
 	set LABEL_PREFIX=
 	set PUBLIC_PREFIX=
 	set PUBLIC_LABEL_PREFIX=
+
 	set INFO_FILE_SUFFIX=
 	set ERRORS_FILE_SUFFIX=
 
@@ -225,13 +227,22 @@ goto END
 
 %return%
 
+
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void extractLine(String variableName, String linePattern, String file name)
+@rem ---   void extractLine(String variableName, String linePattern, String fileName)
 @rem ---
 @rem ---   Looks within the specified file for a matching line (i.e. a line which
-@rem ---   starts with the specified pattern) and assigns the line value to the
+@rem ---   starts with the specified pattern) and assigns the line string to the
 @rem ---   specified variable.
+@rem ---
+@rem ---
+@rem ---   @param variableName
+@rem ---          the name of a variable
+@rem ---   @param linePattern
+@rem ---          a search pattern
+@rem ---   @param fileName
+@rem ---          the name of the file which is searched
 @rem ---
 
 :extractLine
@@ -254,18 +265,18 @@ goto END
 	set "linePattern=%linePattern:"=%"
 
 
-	set "filename=%3"
-	if '%filename%'=='' (
+	set "fileName=%3"
+	if '%fileName%'=='' (
 
 		call:printErrorMessage "(%0) No file name has been specified!"
 		%return% %GENERIC_FRAMEWORK_ERROR%
 	)
-	set "filename=%filename:"=%"
+	set "fileName=%fileName:"=%"
 
 
 	setlocal EnableDelayedExpansion
 
-		for /f "delims=*" %%A in ('findstr /r /i /C:"^%linePattern%" "%filename%" 2^>nul') do (
+		for /f "delims=*" %%A in ('findstr /r /i /C:"^%linePattern%" "%fileName%" 2^>nul') do (
 
 			set "line=%%A"
 			set "line=!line:%linePattern%=!"
@@ -280,7 +291,11 @@ goto END
 @rem ---
 @rem ---   void printErrorMessage(String errorMessage)
 @rem ---
-@rem ---   Prints the specified error message to the console.
+@rem ---   Prints the specified error message to the console (i.e. error channel).
+@rem ---
+@rem ---
+@rem ---   @param errorMessage
+@rem ---          an error message
 @rem ---
 
 :printErrorMessage
@@ -307,6 +322,12 @@ goto END
 @rem ---   identifier. Additionally further details can be specified which will be
 @rem ---   included in the error message.
 @rem ---
+@rem ---
+@rem ---   @param errorName
+@rem ---          the identifier for an error
+@rem ---   @param someDetails
+@rem ---          additional details which added to the error message
+@rem ---
 
 :handleError
 
@@ -326,9 +347,9 @@ goto END
 	set errorMessageKey=%errorName%%MESSAGE_SUFFIX%
 
 
-	set code=
-	call:extractLine code %errorCodeKey% %errorsFile%
-	if '%code%'=='' (
+	set returnCode=
+	call:extractLine returnCode %errorCodeKey% %errorsFile%
+	if '%returnCode%'=='' (
 
 		call:printErrorMessage "(%0) No error code has been specified for the error '%errorName%'!"
 		%return% %GENERIC_FRAMEWORK_ERROR%
@@ -381,7 +402,7 @@ goto END
 	set errorMessageKey=
 	set message=
 
-%return% %code%
+%return% %returnCode%
 
 
 @rem ================================================================================
