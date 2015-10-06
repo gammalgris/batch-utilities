@@ -151,6 +151,15 @@ goto END
 	set TABULATOR_PATTERN={tab}
 
 
+	findstr /r /i /c:"^%prefix%" %infoFile% >nul
+	%ifError% (
+	
+		call:handleError InvalidSubroutineError %subroutineName%
+		call:cleanUp
+		%return% %returnCode%
+	)
+
+
 	setlocal EnableDelayedExpansion
 
 		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" "%infoFile%" 2^>nul') do (
