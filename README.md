@@ -10,14 +10,18 @@ The provided batch scripts can be used as a basis for your own batch scripts. Th
 ### Usage
 
 ```Batchfile
-   library-skeleton info info
+   library-skeleton about
    
+   library-skeleton info info
    library-skeleton info listSubroutines
+   
    library-skeleton listSubroutines
 
 
-   utilities.bat info info
+   utilities.bat about
    
+   utilities.bat info info
    utilities.bat info listSubroutines
+   
    utilities.bat listSubroutines
 ```
