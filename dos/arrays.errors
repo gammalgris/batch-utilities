@@ -1,0 +1,27 @@
+
+MissingConstantsError.code@3
+MissingConstantsError.message@A prerequisite (constants) is missing^^^!
+
+MissingMacrosError.code@4
+MissingMacrosError.message@A prerequisite (macros) is missing^^^!
+
+NoSubroutineError.code@5
+NoSubroutineError.message@No subroutine has been specified^^^!
+
+InvalidSubroutineError.code@6
+InvalidSubroutineError.message@No subroutine with the name {1} exists^^^!
+
+MissingParameterError.code@7
+MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified^^^!
+
+InitializationFailedError.code@8
+InitializationFailedError.message@The specified array already exists ^(variable^={1}^)^^^!
+
+InvalidArrayError.code@9
+InvalidArrayError.message@The specified variable is no array ^(variable^={1}^)^^^!
+
+InvalidArrayElementError.code@10
+InvalidArrayElementError.message@An invalid array element was specified ^(variable^={1}; index^={2}^)^^^!
+
+FileNotFoundError.code@11
+FileNotFoundError.message@The specified file doesn't exist ^(file^={1}^)^^^!

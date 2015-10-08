@@ -1,0 +1,148 @@
+
+:about 
+:about A utility batch script for handling 'arrays'.
+:about 
+
+
+:PUBLIC_about 
+:PUBLIC_about Prints a general description of this batch script.
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Syntax
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}{batch-name} about
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Parameters:
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}none
+:PUBLIC_about 
+
+
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines Lists all subroutines which are defined within this utility library.
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Syntax:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}{batch-name} listSubroutines
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Parameters:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}none
+:PUBLIC_listSubroutines 
+
+
+:PUBLIC_info 
+:PUBLIC_info Prints the info screen for the specified subroutine.
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Syntax:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}{batch-name} info [subroutine]
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Parameters:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}[subroutine]{tab}the name of a subroutine
+:PUBLIC_info 
+
+
+:PUBLIC_newArray 
+:PUBLIC_newArray Creates a new 'array', i.e. the variable which contains the array's
+:PUBLIC_newArray length is initialized.
+:PUBLIC_newArray 
+:PUBLIC_newArray 
+:PUBLIC_newArray {tab}Syntax:
+:PUBLIC_newArray 
+:PUBLIC_newArray {tab}{tab}{batch-name} newArray [variableName]
+:PUBLIC_newArray 
+:PUBLIC_newArray 
+:PUBLIC_newArray {tab}Parameters:
+:PUBLIC_newArray 
+:PUBLIC_newArray {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_newArray 
+
+
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray Destroys the specified  'array', i.e. the variables which contain the
+:PUBLIC_destroyArray array's length and content are undefined.
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray {tab}Syntax:
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray {tab}{tab}{batch-name} destroyArray [variableName]
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray {tab}Parameters:
+:PUBLIC_destroyArray 
+:PUBLIC_destroyArray {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_destroyArray 
+
+
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement Adds a new element to the specified array.
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement {tab}Syntax:
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement {tab}{tab}{batch-name} addArrayElement [variableName] [value]
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement {tab}Parameters:
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_addArrayElement 
+:PUBLIC_addArrayElement {tab}{tab}[value]{tab}the value of the new array element
+:PUBLIC_addArrayElement 
+
+
+:PUBLIC_printArray 
+:PUBLIC_printArray Prints the specified array to the console.
+:PUBLIC_printArray 
+:PUBLIC_printArray 
+:PUBLIC_printArray {tab}Syntax:
+:PUBLIC_printArray 
+:PUBLIC_printArray {tab}{tab}{batch-name} printArray [variableName]
+:PUBLIC_printArray 
+:PUBLIC_printArray 
+:PUBLIC_printArray {tab}Parameters:
+:PUBLIC_printArray 
+:PUBLIC_printArray {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_printArray 
+
+
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement Prints an element of the specified array at the specified index to the
+:PUBLIC_printArrayElement console.
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement {tab}Syntax:
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement {tab}{tab}{batch-name} printArrayElement [variableName] [index]
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement {tab}Parameters:
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_printArrayElement 
+:PUBLIC_printArrayElement {tab}{tab}[index]{tab}the index of an array element
+:PUBLIC_printArrayElement 
+
+
+:PUBLIC_parseFile
+:PUBLIC_parseFile Reads the specified file and adds the lines to the specified array.
+:PUBLIC_parseFile 
+:PUBLIC_parseFile 
+:PUBLIC_parseFile {tab}Syntax:
+:PUBLIC_parseFile 
+:PUBLIC_parseFile {tab}{tab}{batch-name} parseFile [fileName] [variableName]
+:PUBLIC_parseFile 
+:PUBLIC_parseFile 
+:PUBLIC_parseFile {tab}Parameters:
+:PUBLIC_parseFile 
+:PUBLIC_parseFile {tab}{tab}[fileName]{tab}the name of an input file
+:PUBLIC_parseFile 
+:PUBLIC_parseFile {tab}{tab}[variableName]{tab}the name of an array variable
+:PUBLIC_parseFile 
