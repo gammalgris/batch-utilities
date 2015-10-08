@@ -1,4 +1,24 @@
 
+:about 
+:about A skeleton for a batch script.
+:about 
+
+
+:PUBLIC_about 
+:PUBLIC_about Prints a general description of this batch script.
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Syntax
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}{batch-name} about
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Parameters:
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}none
+:PUBLIC_about 
+
+
 :PUBLIC_listSubroutines 
 :PUBLIC_listSubroutines Lists all subroutines which are defined within this utility library.
 :PUBLIC_listSubroutines 

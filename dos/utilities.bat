@@ -184,9 +184,55 @@ goto END
 
 
 	set BATCH_NAME_PATTERN=
+	set TABULATOR_PATTERN=
 
 	set prefix=
 	set subroutineName=
+
+goto END
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void about()
+@rem ---
+@rem ---   Prints a general description of this batch script.
+@rem ---
+
+:PUBLIC_about
+
+	set "prefix=%LABEL_PREFIX%about%SPACE%"
+	set BATCH_NAME_PATTERN={batch-name}
+	set TABULATOR_PATTERN={tab}
+
+
+	setlocal EnableDelayedExpansion
+
+		for /f "delims=*" %%A in ('findstr /r /i /c:"^%prefix%" "%infoFile%" 2^>nul') do (
+
+			set "line=%%A"
+			set "line=!line:%prefix%=!"
+
+			if '!line!'=='' (
+
+				@rem do nothing
+
+			) else (
+
+				set "line=!line:%TABULATOR_PATTERN%=%TABULATOR%!"
+				set "line=!line:%BATCH_NAME_PATTERN%=%batchName%!"
+			)
+
+			!cprintln!.!line!
+		)
+
+	endlocal
+
+
+	set BATCH_NAME_PATTERN=
+	set TABULATOR_PATTERN=
+
+	set prefix=
 
 goto END
 
