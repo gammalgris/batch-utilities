@@ -16,7 +16,10 @@ if not defined __STACK__ (
 	exit /b 0
 )
 
-del /Q %STACK_FILE%
+if exist %STACK_FILE% (
+
+	del /Q %STACK_FILE%
+)
 
 set STACK_FILE=
 set STACK_SIZE=
