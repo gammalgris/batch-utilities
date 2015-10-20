@@ -8,22 +8,6 @@ if defined __MACROS__ (
 echo execute %~n0...
 
 
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   Load prerequisites
-@rem ---
-
-call define-constants.bat
-if "%ERRORLEVEL%"=="0" (
-
-	@rem OK
-
-) else (
-
-	goto MISSING_CONSTANTS_ERROR
-)
-
-
 @rem ================================================================================
 @rem ===
 @rem ===   Declarations of various macros.
@@ -36,15 +20,12 @@ if "%ERRORLEVEL%"=="0" (
 @rem ---
 @rem ---   A macro to check the error level.
 @rem ---
-@rem ---   See
-@rem ---   http://stackoverflow.com/questions/10935693/foolproof-way-to-check-for-nonzero-error-return-code-in-windows-batch-file
-@rem ---
 
 set macroName=ifError
 echo %TAB%define %macroName%
 set "%macroName%=set foundErr=1&(if errorlevel 0 if not errorlevel 1 set foundErr=)&if defined foundErr"
 
-call error.bat
+call  %~dp0%error.bat
 %ifError% (
 
 	@rem OK, the macro works
@@ -54,7 +35,7 @@ call error.bat
 	goto MACRO_ERROR
 )
 
-call ok.bat
+call  %~dp0%ok.bat
 %ifError% (
 
 	goto MACRO_ERROR
