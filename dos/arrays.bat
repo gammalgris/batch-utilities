@@ -20,28 +20,26 @@ set subroutineName=%1
 @rem ---   Load prerequisites
 @rem ---
 
-call define-constants.bat
+call %~dp0%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:handleError MissingConstantsError
-	call:cleanUp
-	%return% %returnCode%
+	echo Error: Unable to initialize constants! >&2
+	exit /b 3
 )
 
-call define-macros.bat
+call %~dp0%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:handleError MissingMacrosError
-	call:cleanUp
-	%return% %returnCode%
+	echo Error: Unable to initialize macros! >&2
+	exit /b 4
 )
 
 

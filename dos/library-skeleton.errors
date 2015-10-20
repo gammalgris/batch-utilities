@@ -1,10 +1,4 @@
 
-MissingConstantsError.code@3
-MissingConstantsError.message@A prerequisite (constants) is missing^^^!
-
-MissingMacrosError.code@4
-MissingMacrosError.message@A prerequisite (macros) is missing^^^!
-
 NoSubroutineError.code@5
 NoSubroutineError.message@No subroutine has been specified^^^!
 
