@@ -38,7 +38,7 @@ if "%ERRORLEVEL%"=="0" (
 
 
 @rem
-@rem The tests are executed with a static order (last test first).
+@rem The tests within this test suite are defined.
 @rem
 
 set test.length=11
