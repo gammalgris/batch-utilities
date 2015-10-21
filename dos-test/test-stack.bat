@@ -21,7 +21,7 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	echo Unable to initialize constants! >&2
+	call:printErrorMessage "^(%0^) Unable to initialize constants!"
 	exit /b 2
 )
 
@@ -32,43 +32,101 @@ if "%ERRORLEVEL%"=="0" (
 
 ) else (
 
-	echo Unable to initialize macros! >&2
+	call:printErrorMessage "^(%0^) Unable to initialize macros!"
 	exit /b 3
 )
 
 
 @rem
-@rem The tests are executed with a static irder (last test first).
+@rem The tests are executed with a static order (last test first).
 @rem
-@rem ToDo
-@rem Make the order of test execution random.
+
+set test.length=11
+set test[1]=:testIsInitializedOnInitializedStack
+set test[2]=:testPopOnEmptyStack
+set test[3]=:testPeekOnEmptyStack
+set test[4]=:testPopOnInitializedStack
+set test[5]=:testPeekOnInitializedStack
+set test[6]=:testPushOnInitializedStack
+set test[7]=:testInitStack
+set test[8]=:testIsInitializedOnUnitializedStack
+set test[9]=:testPushOnUnitializedStack
+set test[10]=:testPeekOnUnitializedStack
+set test[11]=:testPopOnUnitializedStack
+
+set MIN=1
+set MAX=%test.length%
+
+set test.order=
+
+
+@rem
+@rem Determine order of tests
+@rem
+
+%cprintln%.
+%cprint% determine random order 
+
+:loop
+
+call:randomSetAppend test.order %MIN% %MAX%
+%cprint% .
+
+call:isCompleteSet test.order %MIN% %MAX%
+%ifError% (
+
+	goto loop
+)
+
+%cprintln% done.
+
+
+@rem
+@rem Run all tests.
 @rem
 
 call:runSuite %0
 
-call:testIsInitializedOnInitializedStack
-call:testPopOnEmptyStack
-call:testPeekOnEmptyStack
-call:testPopOnInitializedStack
-call:testPeekOnInitializedStack
-call:testPushOnInitializedStack
-call:testInitStack
-call:testIsInitializedOnUnitializedStack
-call:testPushOnUnitializedStack
-call:testPeekOnUnitializedStack
-call:testPopOnUnitializedStack
+set testName=
+set tmp=
+
+for %%A in (%test.order%) do (
+
+	call:invokeTest test%%A
+)
 
 call:showSummary %0
 
 
+@rem
 @rem clean up after this test suite has been executed.
+@rem
+
+set MIN=
+set MAX=
+
+for /L %%A in (1, 1, %test.length%) do (
+
+	set test[%%A]=
+)
+set test.length=
+set test.order=
 
 set ALL_TESTS=
-set FAILED_TESTS=
 set SUCCESSFUL_TESTS=
 
 set BASEDIR=
 set STACK_DIR=
+
+
+if "%FAILED_TESTS%"=="0" (
+
+	@rem OK
+
+) else (
+
+	%return% %FAILED_TESTS%
+)
 
 %return%
 
@@ -414,7 +472,7 @@ set STACK_DIR=
 @rem ---
 @rem ---   void testIsInitializedOnInitializedStack()
 @rem ---
-@rem ---   Checks if the stack is initializzed.
+@rem ---   Checks if the stack is initialized.
 @rem ---
 @rem ---
 @rem ---   Note:
@@ -445,6 +503,47 @@ set STACK_DIR=
 %return%
 
 
+@rem ================================================================================
+@rem ===
+@rem ===   Test Framework functions
+@rem ===
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void invokeTest(String variableName)
+@rem ---
+@rem ---   Invokes the test which is stored in the specified variable.
+@rem ---
+@rem ---
+@rem ---   @param variableName
+@rem ---          a variable which contains the name of a test.
+@rem ---
+
+:invokeTest
+
+	@rem echo 	DEBUG^(%0^): variable^='%1'
+
+	set __testName=
+	set __tmp=
+
+
+	setlocal EnableDelayedExpansion
+
+		set __tmp=!%1!
+
+	endlocal & set __testName=%__tmp%
+
+	@rem echo 	DEBUG^(%0^): test name^='%__testName%
+
+	call%__testName%
+
+
+	set __testName=
+	set __tmp=
+
+%return%
+
+
 @rem --------------------------------------------------------------------------------
 @rem ---
 @rem ---   void runSuite()
@@ -456,6 +555,8 @@ set STACK_DIR=
 
 	%cprintln%.
 	%cprintln% running tests from %1
+	%cprintln%.
+	%cprintln% [==========]
 
 %return%
 
@@ -542,9 +643,325 @@ set STACK_DIR=
 
 :showSummary
 
+	%cprintln% [==========]
 	%cprintln%.
 	%cprintln% %ALL_TESTS% tests were executed.
 	%cprintln% %SUCCESSFUL_TESTS% tests were successful.
 	%cprintln% %FAILED_TESTS% tests have failed.
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void randomNumber(String _variableName, int _minValue, int _maxValue)
+@rem ---
+@rem ---   Generates a random number (minValue <= number <= maxValue) and assigns it
+@rem ---   to the specified variable.
+@rem ---
+@rem ---
+@rem ---   @param _variableName
+@rem ---          the name of a variable
+@rem ---   @param _minValue
+@rem ---          a minimum value
+@rem ---   @param _maxValue
+@rem ---          a maximum value
+@rem ---
+
+:randomNumber
+
+	set "_variableName=%1"
+	if '%_variableName%'=='' (
+
+		call:printErrorMessage "^(%0^) No variable name has been specified^!"
+		%return% 2
+	)
+	set "_variableName=%_variableName:"=%"
+
+
+	set "_minValue=%2"
+	if '%_minValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No minimum value has been specified^!"
+		%return% 3
+	)
+	set "_minValue=%_minValue:"=%"
+
+
+	set "_maxValue=%3"
+	if '%_maxValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No maximum value has been specified^!"
+		%return% 4
+	)
+	set "_maxValue=%_maxValue:"=%"
+
+
+	set /a _tmp=%RANDOM% * (%_maxValue% - %_minValue% + 1) / 32768 + %_minValue%
+	set %_variableName%=%_tmp%
+
+
+	set _tmp=
+	set _variableName=
+	set _minValue=
+	set _maxValue=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void randomSetAppend(String setName, int minValue, int maxValue)
+@rem ---
+@rem ---   Adds a random number (minValue <= number <= maxValue) to the specified
+@rem ---   set. If the random number already exists within the set then the set
+@rem ---   remains unchanged.
+@rem ---
+@rem ---
+@rem ---   Examples of valid sets:
+@rem ---
+@rem ---   1) sequence1=""
+@rem ---   2) sequence2="[1]"
+@rem ---   3) sequence3="[2] [1]"
+@rem ---
+@rem ---
+@rem ---   Implementation Note:
+@rem ---   Numbers are surrounded by brackets because it makes it easier to identify
+@rem ---   individual numbers. E.g. with brackets [1] and [11] are distinguishable,
+@rem ---   without them 1 and 11 are undistinguishable.
+@rem ---
+@rem ---
+@rem ---   @param setName
+@rem ---          the name of a variable which contains a set of numbers
+@rem ---   @param minValue
+@rem ---          a minimum value
+@rem ---   @param maxValue
+@rem ---          a maximum value
+@rem ---
+
+:randomSetAppend
+
+	set "setName=%1"
+	if '%setName%'=='' (
+
+		call:printErrorMessage "^(%0^) No variable name has been specified!"
+		%return% 2
+	)
+	set "setName=%setName:"=%"
+
+	set "minValue=%2"
+	if '%minValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No minimum value has been specified^!"
+		%return% 3
+	)
+	set "minValue=%minValue:"=%"
+
+
+	set "maxValue=%3"
+	if '%maxValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No maximum value has been specified^!"
+		%return% 4
+	)
+	set "maxValue=%maxValue:"=%"
+
+
+	set tmp=
+	set value=
+
+	setlocal EnableDelayedExpansion
+	
+		set "tmp=!%setName%!"
+
+	endlocal & set "value=%tmp%"
+
+
+	set tmp=
+
+	call:randomNumber tmp %minValue% %maxValue%
+
+	%cprintln% %value% | findstr /L [%tmp%] 1>nul 2>&1
+	%ifError% (
+
+		call:appendNumber %setName% [%tmp%]
+
+	) else (
+
+		@rem was found
+	)
+
+	set tmp=
+	set value=
+	set setName=
+	set minValue=
+	set maxValue=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void appendNumber(String __setName, int __newNumber)
+@rem ---
+@rem ---   Checks if the specified set doesn't contain the specified number and
+@rem ---   appends it to the set.
+@rem ---
+@rem ---   @param __setName
+@rem ---          the name of a variable which contains a set of numbers
+@rem ---   @param __newNumber
+@rem ---          a new value
+@rem ---
+
+:appendNumber
+
+	set "__setName=%1"
+	if '%__setName%'=='' (
+
+		call:printErrorMessage "^(%0^) No variable name has been specified^!"
+		%return% 2
+	)
+	set "__setName=%__setName:"=%"
+
+	set "__newNumber=%2"
+	if '%__newNumber%'=='' (
+
+		call:printErrorMessage "^(%0^) No number has been specified!"
+		%return% 3
+	)
+	set "__newNumber=%__newNumber:"=%"
+
+
+	set __value=
+	set __tmp=
+
+	setlocal EnableDelayedExpansion
+
+		set "__tmp=!%__setName%!"
+	
+	endlocal & set "__value=%__tmp%"
+
+	if defined __value (
+
+		set "__value=%__value:"=%"
+	)
+
+	if "%__value%"=="" (
+
+		set "%__setName%=%__newNumber%"
+
+	) else (
+
+		set "%__setName%=%__value% %__newNumber%"
+	)
+
+
+	set __value=
+	set __tmp=
+	set __newNumber=
+	set __setName=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void isCompleteSet(String _setName, int _minValue, int _maxValue)
+@rem ---
+@rem ---   Checks if the specified set contains numbers within the specified interval
+@rem ---   (including the borders).
+@rem ---
+@rem ---
+@rem ---   @param _setName
+@rem ---          the name of a variable which contains a set of numbers
+@rem ---   @param _minValue
+@rem ---          a minimum value
+@rem ---   @param _maxValue
+@rem ---          a maximum value
+@rem ---
+
+:isCompleteSet
+
+	set "_setName=%1"
+	if '%_setName%'=='' (
+
+		call:printErrorMessage "^(%0^) No variable name has been specified^!"
+		%return% 2
+	)
+	set "_setName=%_setName:"=%"
+
+
+	set "_minValue=%2"
+	if '%_minValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No minimum value has been specified^!"
+		%return% 3
+	)
+	set "_minValue=%_minValue:"=%"
+
+
+	set "_maxValue=%3"
+	if '%_maxValue%'=='' (
+
+		call:printErrorMessage "^(%0^) No maximum value has been specified^!"
+		%return% 4
+	)
+	set "_maxValue=%_maxValue:"=%"
+
+
+	set _tmp=
+	set _value=
+
+	setlocal EnableDelayedExpansion
+	
+		set "_tmp=!%_setName%!"
+
+	endlocal & set "_value=%_tmp%"
+
+	set _missingNumbers=
+
+
+	for /L %%A in (%_minValue%, 1, %_maxValue%) do (
+
+		%cprintln% %_value% | findstr /L [%%A] 1>nul 2>&1
+		%ifError% (
+
+			call:appendNumber _missingNumbers [%%A]
+
+		) else (
+
+			@rem was found
+		)
+	)
+
+
+	set _tmp=
+	set _value=
+	set _setName=
+	set _minValue=
+	set _maxValue=
+
+	if defined _missingNumbers (
+
+		%return% 1
+	)
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void printErrorMessage(String errorMessage)
+@rem ---
+@rem ---   Prints the specified error message to the console (i.e. error channel).
+@rem ---
+@rem ---
+@rem ---   @param errorMessage
+@rem ---          an error message
+@rem ---
+
+:printErrorMessage
+
+	%cprintln% Error: %~1 1>&2
 
 %return%
