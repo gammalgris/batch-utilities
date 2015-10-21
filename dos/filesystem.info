@@ -1,0 +1,94 @@
+
+:about 
+:about A collection of various file system operations.
+:about 
+
+
+:PUBLIC_about 
+:PUBLIC_about Prints a general description of this batch script.
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Syntax
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}{batch-name} about
+:PUBLIC_about 
+:PUBLIC_about 
+:PUBLIC_about {tab}Parameters:
+:PUBLIC_about 
+:PUBLIC_about {tab}{tab}none
+:PUBLIC_about 
+
+
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines Lists all subroutines which are defined within this utility library.
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Syntax:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}{batch-name} listSubroutines
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}Parameters:
+:PUBLIC_listSubroutines 
+:PUBLIC_listSubroutines {tab}{tab}none
+:PUBLIC_listSubroutines 
+
+
+:PUBLIC_info 
+:PUBLIC_info Prints the info screen for the specified subroutine.
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Syntax:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}{batch-name} info [subroutine]
+:PUBLIC_info 
+:PUBLIC_info 
+:PUBLIC_info {tab}Parameters:
+:PUBLIC_info 
+:PUBLIC_info {tab}{tab}[subroutine]{tab}the name of a subroutine
+:PUBLIC_info 
+
+
+:PUBLIC_isLocked 
+:PUBLIC_isLocked Checks if the specified file is locked by another process.
+:PUBLIC_isLocked 
+:PUBLIC_isLocked {tab}Syntax:
+:PUBLIC_isLocked 
+:PUBLIC_isLocked {tab}{tab}{batch-name} isLocked [filename]
+:PUBLIC_isLocked 
+:PUBLIC_isLocked 
+:PUBLIC_isLocked {tab}Parameters:
+:PUBLIC_isLocked 
+:PUBLIC_isLocked {tab}{tab}[filename]{tab}an absolute or relative path which represents a file
+:PUBLIC_isLocked 
+
+
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock Checks if the specified file is locked by another process.
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock {tab}Syntax:
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock {tab}{tab}{batch-name} checkFileLock [filename] {variableName}
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock {tab}Parameters:
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock {tab}{tab}[filename]{tab}an absolute or relative path which represents a file
+:PUBLIC_checkFileLock 
+:PUBLIC_checkFileLock {tab}{tab}[variableName]{tab}the name of a variable which will store the result of the check
+:PUBLIC_checkFileLock 
+
+
+:PUBLIC_locked 
+:PUBLIC_locked Locks the specified file. This operation is mainly provided for purposes
+:PUBLIC_locked of testing.
+:PUBLIC_locked 
+:PUBLIC_locked {tab}Syntax:
+:PUBLIC_locked 
+:PUBLIC_locked {tab}{tab}{batch-name} locked [filename]
+:PUBLIC_locked 
+:PUBLIC_locked 
+:PUBLIC_locked {tab}Parameters:
+:PUBLIC_locked 
+:PUBLIC_locked {tab}{tab}[filename]{tab}an absolute or relative path which represents a file
+:PUBLIC_locked 

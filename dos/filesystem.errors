@@ -1,0 +1,21 @@
+
+NoSubroutineError.code@5
+NoSubroutineError.message@No subroutine has been specified^^^!
+
+InvalidSubroutineError.code@6
+InvalidSubroutineError.message@No subroutine with the name {1} exists^^^!
+
+MissingParameterError.code@7
+MissingParameterError.message@The subroutine with the name {1} expects a parameter but none was specified^^^!
+
+MissingFilenameError.code@8
+MissingFilenameError.message@The subroutine with the name {1} expects a file name but none was specified^^^!
+
+FileNotFoundException.code@9
+FileNotFoundException.message@The specified file {1} doesn't exist^^^!
+
+MissingVariableNameError.code@10
+MissingVariableNameError.message@The subroutine with the name {1} expects a variable name but none was specified^^^!
+
+CheckFileLockError.code@11
+CheckFileLockError.message@The subroutine with the name {1} couldn't check if the specified file {2} is locked^^^!

@@ -25,6 +25,12 @@ call:undefine PRIME
 call:undefine DOUBLE_PRIME
 call:undefine NO_ERROR
 call:undefine GENERIC_FRAMEWORK_ERROR
+call:undefine FILE_IS_NOT_LOCKED
+call:undefine FILE_IS_LOCKED
+call:undefine READ_ACCESS
+call:undefine DENIED_READ_ACCESS
+call:undefine WRITE_ACCESS
+call:undefine DENIED_WRITE_ACCESS
 
 echo.
 

@@ -85,6 +85,16 @@ call:defineConstant NO_ERROR 0
 call:defineConstant GENERIC_FRAMEWORK_ERROR 2
 
 
+call:defineConstant	FILE_IS_NOT_LOCKED 0
+call:defineConstant FILE_IS_LOCKED 1
+
+call:defineConstant	READ_ACCESS 0
+call:defineConstant DENIED_READ_ACCESS 1
+
+call:defineConstant WRITE_ACCESS 0
+call:defineConstant DENIED_WRITE_ACCESS 1
+
+
 set __CONSTANTS__=loaded
 goto END
 
