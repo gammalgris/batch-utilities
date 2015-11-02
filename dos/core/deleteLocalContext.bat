@@ -29,7 +29,6 @@ if not defined §ifError (
 
 
 set "STACK_PATH=%~dp0..\stack\"
-echo DEBUG:: stack path^=%STACK_PATH%
 
 call %STACK_PATH%isInitialized >nul 2>&1
 %§ifError% (

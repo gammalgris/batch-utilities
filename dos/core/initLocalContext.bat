@@ -29,7 +29,6 @@ if not defined §ifError (
 
 
 set "STACK_PATH=%~dp0..\stack\"
-echo DEBUG:: stack path^=%STACK_PATH%
 
 call %STACK_PATH%isInitialized >nul 2>&1
 %§ifError% (
@@ -58,7 +57,6 @@ call:today §tmp1 "yyyyMMdd"
 call:now §tmp2 "HHmmssff"
 
 set LOCAL=%§tmp1%%§tmp2%
-echo DEBUG:: LOCAL=%LOCAL%
 
 
 call %STACK_PATH%push %LOCAL%
