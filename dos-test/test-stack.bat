@@ -1,6 +1,5 @@
 @Echo Off
 
-
 set ALL_TESTS=0
 set FAILED_TESTS=0
 set SUCCESSFUL_TESTS=0
@@ -41,7 +40,7 @@ if "%ERRORLEVEL%"=="0" (
 @rem The tests within this test suite are defined.
 @rem
 
-set test.length=11
+set test.length=12
 set test[1]=:testIsInitializedOnInitializedStack
 set test[2]=:testPopOnEmptyStack
 set test[3]=:testPeekOnEmptyStack
@@ -53,6 +52,7 @@ set test[8]=:testIsInitializedOnUnitializedStack
 set test[9]=:testPushOnUnitializedStack
 set test[10]=:testPeekOnUnitializedStack
 set test[11]=:testPopOnUnitializedStack
+set test[12]=:testPeekPreviousElement
 
 set MIN=1
 set MAX=%test.length%
@@ -151,14 +151,14 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%pop a
+	call %STACK_DIR%pop a 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
 	%ifError% (
 
-		call:passTest %0
+		call:failTest %0
 
 	) else (
 
-		call:failTest %0
+		call:passTest %0
 	)
 
 
@@ -182,14 +182,14 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%peek a
+	call %STACK_DIR%peek a 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
 	%ifError% (
 
-		call:passTest %0
+		call:failTest %0
 
 	) else (
 
-		call:failTest %0
+		call:passTest %0
 	)
 
 
@@ -213,14 +213,14 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%push "Hello World!"
+	call %STACK_DIR%push "Hello World!" 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
 	%ifError% (
 
-		call:passTest %0
+		call:failTest %0
 
 	) else (
 
-		call:failTest %0
+		call:passTest %0
 	)
 
 
@@ -233,12 +233,6 @@ if "%FAILED_TESTS%"=="0" (
 @rem ---
 @rem ---   Checks if the stack is not initializzed.
 @rem ---
-@rem ---
-@rem ---   Note:
-@rem ---   The test is not reliable. It's not possible to detect a success. Sometimes
-@rem ---   if this test fails then the test testPushOnUnitializedStack fails too.
-@rem ---   There might be some unwanted side effects.
-@rem ---
 
 :testIsInitializedOnUnitializedStack
 
@@ -247,7 +241,7 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%isInitialized 2>&1 | findstr /b "The stack is not initialized!"
+	call %STACK_DIR%isInitialized 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
 	%ifError% (
 
 		call:failTest %0
@@ -277,7 +271,7 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%initStack
+	call %STACK_DIR%initStack 2>&1 | findstr /L %STACK_INITIALIZATION_MESSAGE%
 	%ifError% (
 
 		call:failTest %0
@@ -414,14 +408,14 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%peek a
+	call %STACK_DIR%peek a 2>&1 | findstr /L %STACK_IS_EMPTY_MESSAGE%
 	%ifError% (
 
-		call:passTest %0
+		call:failTest %0
 
 	) else (
 
-		call:failTest %0
+		call:passTest %0
 	)
 
 
@@ -451,14 +445,14 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%pop a
+	call %STACK_DIR%pop a 2>&1 | findstr /L %STACK_IS_EMPTY_MESSAGE%
 	%ifError% (
 
-		call:passTest %0
+		call:failTest %0
 
 	) else (
 
-		call:failTest %0
+		call:passTest %0
 	)
 
 
@@ -474,10 +468,6 @@ if "%FAILED_TESTS%"=="0" (
 @rem ---
 @rem ---   Checks if the stack is initialized.
 @rem ---
-@rem ---
-@rem ---   Note:
-@rem ---   The test is not reliable. It's not possible to detect a success.
-@rem ---
 
 :testIsInitializedOnInitializedStack
 
@@ -487,7 +477,7 @@ if "%FAILED_TESTS%"=="0" (
 
 	call:runTest %0
 
-	call %STACK_DIR%isInitialized
+	call %STACK_DIR%isInitialized 2>&1 | findstr /L %STACK_ALREADY_INITIALIZED_MESSAGE%
 	%ifError% (
 
 		call:failTest %0
@@ -497,6 +487,47 @@ if "%FAILED_TESTS%"=="0" (
 		call:passTest %0
 	)
 
+
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPeekPreviousElement()
+@rem ---
+@rem ---   Checks if removing an element works as expected..
+@rem ---
+
+:testPeekPreviousElement
+
+	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
+
+	set PREVIOUS_ELEMENT=Hello
+	set LAST_ELEMENT=World
+
+	call %STACK_DIR%push %PREVIOUS_ELEMENT%
+	call %STACK_DIR%push %LAST_ELEMENT%
+	call %STACK_DIR%pop a
+	call %STACK_DIR%peek a
+
+	call:runTest %0
+
+	if '%a%'=='%PREVIOUS_ELEMENT%' (
+
+		call:passTest %0
+
+	) else (
+
+		call:failTest %0
+	)
+
+
+	set PREVIOUS_ELEMENT=
+	set LAST_ELEMENT=
+	set a=
 
 	call:afterTest
 
@@ -616,7 +647,11 @@ if "%FAILED_TESTS%"=="0" (
 :beforeTest
 
 	call %STACK_DIR%deleteStack.bat
-
+	set STACK_NOT_INITIALIZED_MESSAGE="The stack is not initialized"
+	set STACK_INITIALIZATION_MESSAGE="initialize stack ... done"
+	set STACK_ALREADY_INITIALIZED_MESSAGE="The stack is already initialized"
+	set STACK_IS_EMPTY_MESSAGE="The stack is empty"
+	
 %return%
 
 
@@ -630,6 +665,10 @@ if "%FAILED_TESTS%"=="0" (
 :afterTest
 
 	call %STACK_DIR%deleteStack.bat
+	set STACK_NOT_INITIALIZED_MESSAGE=
+	set STACK_INITIALIZATION_MESSAGE=
+	set STACK_ALREADY_INITIALIZED_MESSAGE=
+	set STACK_IS_EMPTY_MESSAGE=
 
 %return%
 
