@@ -22,7 +22,7 @@ if not defined $ifError (
 call %~dp0%isInitialized.bat >nul 2>&1
 %$ifError% (
 
-	echo ^(%0^) The stack isn't initialized^! >&2
+	echo ^(%0^) The stack is not initialized^! >&2
 	exit /b 1
 )
 
