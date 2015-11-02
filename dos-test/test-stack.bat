@@ -65,7 +65,7 @@ set test.order=
 @rem
 
 %cprintln%.
-%cprint% determine random order 
+%cprint% determine random order ..
 
 :loop
 
@@ -78,7 +78,7 @@ call:isCompleteSet test.order %MIN% %MAX%
 	goto loop
 )
 
-%cprintln% done.
+%cprintln%  done.
 
 
 @rem
@@ -166,6 +166,7 @@ if "%FAILED_TESTS%"=="0" (
 	call:afterTest
 
 %return%
+
 
 @rem --------------------------------------------------------------------------------
 @rem ---
