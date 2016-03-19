@@ -29,8 +29,7 @@ set FAILED_TESTS=0
 set SUCCESSFUL_TESTS=0
 
 set "BASEDIR=..\dos\"
-set "CORE_DIR=%BASEDIR%core\"
-set "STACK_DIR=%BASEDIR%stack\"
+set "STACK_DIR=%BASEDIR%stack1\"
 
 
 @rem --------------------------------------------------------------------------------
@@ -65,12 +64,18 @@ if "%ERRORLEVEL%"=="0" (
 @rem The tests within this test suite are defined.
 @rem
 
-set test.length=5
-set test[1]=:testInitLocalContext
-set test[2]=:testDeleteInitializedLocalContext
-set test[3]=:testDeleteUninitializedLocalContext
-set test[4]=:testInitTwoLocalContexts
-set test[5]=:testRestorePreviousLocalContext
+set test.length=11
+set test[1]=:testIsInitializedOnInitializedStack
+set test[2]=:testPopOnEmptyStack
+set test[3]=:testPeekOnEmptyStack
+set test[4]=:testPopOnInitializedStack
+set test[5]=:testPeekOnInitializedStack
+set test[6]=:testPushOnInitializedStack
+set test[7]=:testInitStack
+set test[8]=:testIsInitializedOnUnitializedStack
+set test[9]=:testPushOnUnitializedStack
+set test[10]=:testPeekOnUnitializedStack
+set test[11]=:testPopOnUnitializedStack
 
 set MIN=1
 set MAX=%test.length%
@@ -83,7 +88,7 @@ set test.order=
 @rem
 
 %cprintln%.
-%cprint% determine random order ..
+%cprint% determine random order 
 
 :loop
 
@@ -96,7 +101,7 @@ call:isCompleteSet test.order %MIN% %MAX%
 	goto loop
 )
 
-%cprintln%  done.
+%cprintln% done.
 
 
 @rem
@@ -156,19 +161,110 @@ if "%FAILED_TESTS%"=="0" (
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void testInitLocalContext()
+@rem ---   void testPopOnUnitializedStack()
 @rem ---
-@rem ---   Tries to initialize a local context.
+@rem ---   Tries to remove an element from an uninitialized stack.
 @rem ---
 
-:testInitLocalContext
+:testPopOnUnitializedStack
+
+	call:beforeTest
+	set a=
+
+
+	call:runTest %0
+
+	call %STACK_DIR%pop a 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	set a=
+	call:afterTest
+
+%return%
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPeekOnUnitializedStack()
+@rem ---
+@rem ---   Tries to read an element from an uninitialized stack.
+@rem ---
+
+:testPeekOnUnitializedStack
+
+	call:beforeTest
+	set a=
+
+
+	call:runTest %0
+
+	call %STACK_DIR%peek a 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	set a=
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPushOnUnitializedStack()
+@rem ---
+@rem ---   Tries to push an element to an uninitialized stack.
+@rem ---
+
+:testPushOnUnitializedStack
 
 	call:beforeTest
 
 
 	call:runTest %0
 
-	call %CORE_DIR%initLocalContext
+	call %STACK_DIR%push "Hello World!" 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	call:afterTest
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testIsInitializedOnUnitializedStack()
+@rem ---
+@rem ---   Checks if the stack is not initializzed.
+@rem ---
+
+:testIsInitializedOnUnitializedStack
+
+	call:beforeTest
+
+
+	call:runTest %0
+
+	call %STACK_DIR%isInitialized 2>&1 | findstr /L %STACK_NOT_INITIALIZED_MESSAGE%
 	%ifError% (
 
 		call:failTest %0
@@ -186,85 +282,19 @@ if "%FAILED_TESTS%"=="0" (
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void testInitTwoLocalContexts()
+@rem ---   void testInitStack()
 @rem ---
-@rem ---   Tries to initialize two local contexts.
+@rem ---   Tries to initialize an uninitialized stack.
 @rem ---
 
-:testInitTwoLocalContexts
+:testInitStack
 
 	call:beforeTest
 
 
-	call %CORE_DIR%initLocalContext
-
-	set context1=%LOCAL%
-	if '%context1%'=='' (
-
-		goto testInitTwoLocalContexts_failure
-	)
-
-
 	call:runTest %0
 
-	call %CORE_DIR%initLocalContext
-
-	set context2=%LOCAL%
-	if '%context2%'=='' (
-
-		goto testInitTwoLocalContexts_failure
-	)
-
-
-	:testInitTwoLocalContexts_checkContexts
-
-	if '%context1%'=='%context2%' (
-
-		goto testInitTwoLocalContexts_failure
-
-	) else (
-
-		goto testInitTwoLocalContexts_success
-	)
-
-	:testInitTwoLocalContexts_failure
-
-	call:failTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testInitTwoLocalContexts_success
-
-	call:passTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testInitTwoLocalContexts_end
-
-	set context1=
-	set context2=
-
-	call:afterTest
-
-%return%
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void testDeleteInitializedLocalContext()
-@rem ---
-@rem ---   Tries to delete a local context which has been initialized.
-@rem ---
-
-:testDeleteInitializedLocalContext
-
-	call:beforeTest
-
-	call %CORE_DIR%initLocalContext
-
-	call:runTest %0
-
-	call %CORE_DIR%deleteLocalContext
+	call %STACK_DIR%initStack 2>&1 | findstr /L %STACK_INITIALIZATION_MESSAGE%
 	%ifError% (
 
 		call:failTest %0
@@ -282,19 +312,20 @@ if "%FAILED_TESTS%"=="0" (
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void testDeleteUninitializedLocalContext()
+@rem ---   void testPushOnInitializedStack()
 @rem ---
-@rem ---   Tries to delete a local context without a local context being initialized.
+@rem ---   Tries to push an element to an initialized stack.
 @rem ---
 
-:testDeleteUninitializedLocalContext
+:testPushOnInitializedStack
 
 	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
 
 
 	call:runTest %0
 
-	call %CORE_DIR%deleteLocalContext 2>&1 | findstr /L %STACK_NOT_AVAILABLE_MESSAGE%
+	call %STACK_DIR%push "Hello World!"
 	%ifError% (
 
 		call:failTest %0
@@ -312,82 +343,173 @@ if "%FAILED_TESTS%"=="0" (
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void testRestorePreviousLocalContext()
+@rem ---   void testPeekOnInitializedStack()
 @rem ---
-@rem ---   Tries to restore a previous local context.
+@rem ---   Tries to read an element from an initialized stack with at least one
+@rem ---   element.
 @rem ---
 
-:testRestorePreviousLocalContext
+:testPeekOnInitializedStack
 
 	call:beforeTest
-
-	set currentContext=
-	set context1=
-	set context2=
-
-
-	call %CORE_DIR%initLocalContext
-
-	echo DEBUG:: context1^=%context1%
-	set context1=%LOCAL%
-	if '%context1%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: context1^=%context1%
-
-	call %CORE_DIR%initLocalContext
-
-	echo DEBUG:: context2^=%context2%
-	set context2=%LOCAL%
-	if '%context2%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: context2^=%context2%
+	set a=
+	call %STACK_DIR%initStack >nul 2>&1
+	call %STACK_DIR%push "Hello World!" >nul 2>&1
 
 
 	call:runTest %0
 
-	call %CORE_DIR%deleteLocalContext
+	call %STACK_DIR%peek a
+	%ifError% (
 
-	echo DEBUG:: currentContext^=%currentContext%
-	set currentContext=%LOCAL%
-	if '%currentContext%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: currentContext^=%currentContext%
-
-
-	:testRestorePreviousLocalContext_checkContexts
-
-	if '%context1%'=='%currentContext%' (
-
-		goto testRestorePreviousLocalContext_success
+		call:failTest %0
 
 	) else (
 
-		goto testRestorePreviousLocalContext_failure
+		call:passTest %0
 	)
 
-	:testRestorePreviousLocalContext_failure
 
-	call:failTest %0
-	goto testInitTwoLocalContexts_end
+	set a=
+	call:afterTest
 
-
-	:testRestorePreviousLocalContext_success
-
-	call:passTest %0
-	goto testInitTwoLocalContexts_end
+%return%
 
 
-	:testRestorePreviousLocalContext_end
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPopOnInitializedStack()
+@rem ---
+@rem ---   Tries to remove an element from an initialized stack with at least one
+@rem ---   element.
+@rem ---
 
-	set currentContext=
-	set context1=
-	set context2=
+:testPopOnInitializedStack
+
+	call:beforeTest
+	set a=
+	call %STACK_DIR%initStack >nul 2>&1
+	call %STACK_DIR%push "Hello World!" >nul 2>&1
+
+
+	call:runTest %0
+
+	call %STACK_DIR%pop a
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	set a=
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPeekOnEmptyStack()
+@rem ---
+@rem ---   Tries to read an element from an initialized empty stack.
+@rem ---
+@rem ---
+@rem ---   Note:
+@rem ---   The test is not reliable. It's not possible to detect a success.
+@rem ---
+
+:testPeekOnEmptyStack
+
+	call:beforeTest
+	set a=
+	call %STACK_DIR%initStack >nul 2>&1
+
+
+	call:runTest %0
+
+	call %STACK_DIR%peek a 2>&1 | findstr /L %STACK_IS_EMPTY_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	set a=
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPopOnEmptyStack()
+@rem ---
+@rem ---   Tries to remove an element from an initialized empty stack.
+@rem ---
+@rem ---
+@rem ---   Note:
+@rem ---   The test is not reliable. It's not possible to detect a success.
+@rem ---
+
+:testPopOnEmptyStack
+
+	call:beforeTest
+	set a=
+	call %STACK_DIR%initStack >nul 2>&1
+
+
+	call:runTest %0
+
+	call %STACK_DIR%pop a 2>&1 | findstr /L %STACK_IS_EMPTY_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
+
+	set a=
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testIsInitializedOnInitializedStack()
+@rem ---
+@rem ---   Checks if the stack is initialized.
+@rem ---
+
+:testIsInitializedOnInitializedStack
+
+	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
+
+
+	call:runTest %0
+
+	call %STACK_DIR%isInitialized 2>&1 | findstr /L %STACK_ALREADY_INITIALIZED_MESSAGE%
+	%ifError% (
+
+		call:failTest %0
+
+	) else (
+
+		call:passTest %0
+	)
+
 
 	call:afterTest
 
@@ -507,7 +629,10 @@ if "%FAILED_TESTS%"=="0" (
 :beforeTest
 
 	call %STACK_DIR%deleteStack.bat
-	set STACK_NOT_AVAILABLE_MESSAGE="The stack is not available"
+	set STACK_NOT_INITIALIZED_MESSAGE="The stack is not initialized"
+	set STACK_INITIALIZATION_MESSAGE="initialize stack ... done"
+	set STACK_ALREADY_INITIALIZED_MESSAGE="The stack is already initialized"
+	set STACK_IS_EMPTY_MESSAGE="The stack is empty"
 	
 %return%
 
@@ -522,7 +647,10 @@ if "%FAILED_TESTS%"=="0" (
 :afterTest
 
 	call %STACK_DIR%deleteStack.bat
-	set STACK_NOT_AVAILABLE_MESSAGE=
+	set STACK_NOT_INITIALIZED_MESSAGE=
+	set STACK_INITIALIZATION_MESSAGE=
+	set STACK_ALREADY_INITIALIZED_MESSAGE=
+	set STACK_IS_EMPTY_MESSAGE=
 
 %return%
 
