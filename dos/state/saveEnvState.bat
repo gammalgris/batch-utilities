@@ -13,7 +13,6 @@ call:defineMacros
 set BASEDIR=%~dp0
 set STATE0=%BASEDIR%state0.dump
 set STATE1=%BASEDIR%state1.dump
-set DELTA=%BASEDIR%delta.dump
 
 
 if exist %STATE0% (
@@ -35,6 +34,8 @@ if exist %STATE1% (
 		%return% 2
 	)
 )
+
+call:sleep 1
 
 set > %STATE1%
 %ifError% (
@@ -67,5 +68,37 @@ set > %STATE1%
 	set "cprint=echo|set /p="
 	
 	set "return=exit /b"
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void sleep(int aDuration)
+@rem ---
+@rem ---   The subroutine sleeps approximately for the specified duration.
+@rem ---
+@rem ---
+@rem ---   @param aDuration
+@rem ---          a duration in seconds
+@rem ---
+
+:sleep
+
+	set "_duration=%1"
+	if '%_duration%'=='' (
+
+		%cprintln% Error^(%0^): No duration has been specified! >&2
+		%return% 2
+	)
+	set "_duration=%_duration:"=%"
+
+
+	set /a _duration=%_duration%+1
+
+	ping 127.0.0.1 -n %_duration% >nul 2>&1
+
+
+	set _duration=
 
 %return%

@@ -1,1 +1,23 @@
+
+# Batch scripts
+
 *.bat eol=crlf
+*.errors eol=crlf
+*.info eol=crlf
+
+
+# XML
+
+*.xml eol=lf
+
+
+# Documentation files
+
+*.md eol=lf
+*.txt eol=crlf
+
+
+# HTML and JavaScript
+
+*.html eol=lf
+*.htm eol=lf
