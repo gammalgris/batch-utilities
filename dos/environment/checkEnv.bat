@@ -22,43 +22,41 @@
 @rem SOFTWARE.
 @rem
 
-@Echo Off
+@echo off
 
 @rem ================================================================================
 @rem ===
 @rem ===   void main()
 @rem ===
-@rem ===   This Batch script is a template for smaller scripts.
+@rem ===   This Batch script checks if the environment variables have been changed.
+@rem ===   Depending on the security settings changes to environment variables will
+@rem ===   be reverted after a batch file has finished execution.
 @rem ===
 
-call:defineMacros
+if not defined OLD_PATH (
+
+	echo ERROR^(%0^): The environment hasn't been set or the modifications have been reverted. >&2
+	exit /b 2
+)
 
 
-rem ToDo
+set "_currentPath=%PATH%"
+set "_currentPath=%_currentPath:"=%"
+
+set "_previousPath=%OLD_PATH%"
+set "_previousPath=%_previousPath:"=%"
 
 
-%return%
+if "%_currentPath%"=="%_previousPath%" (
+
+	echo Error^(%0^): The path variable is unchanged! >&2
+	echo /b 2
+
+) else (
+
+	echo.
+	echo The modifications to the path variable have been retained.
+)
 
 
-@rem ================================================================================
-@rem ===
-@rem ===   Internal Subroutines
-@rem ===
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void defineMacros()
-@rem ---
-@rem ---   The subroutine defines required macros.
-@rem ---
-
-:defineMacros
-
-	set "ifError=set foundErr=1&(if errorlevel 0 if not errorlevel 1 set foundErr=)&if defined foundErr"
-	
-	set "cprintln=echo"
-	set "cprint=echo|set /p="
-	
-	set "return=exit /b"
-
-%return%
+exit /b
