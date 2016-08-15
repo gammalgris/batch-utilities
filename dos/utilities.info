@@ -301,6 +301,7 @@
 :PUBLIC_logMessage 
 :PUBLIC_logMessage 
 :PUBLIC_logMessage {tab}Syntax:
+:PUBLIC_logMessage 
 :PUBLIC_logMessage {tab}{tab}{batch-name} logMessage [message]
 :PUBLIC_logMessage {tab}{tab}{batch-name} logMessage [message] [outputFile]
 :PUBLIC_logMessage 
@@ -314,11 +315,12 @@
 :PUBLIC_callProgram 
 :PUBLIC_callProgram The subroutine calls the specified program. Before actually calling
 :PUBLIC_callProgram the program several plausibility checks are performed (e.g. Does it
-:PUBLIC_callProgram exist? Is it a batch file?The subroutine prints the specified message
-:PUBLIC_callProgram to the console. If a output
+:PUBLIC_callProgram exist? Is it a batch file? etc.). The subroutine prints the specified
+:PUBLIC_callProgram message to the console.
 :PUBLIC_callProgram 
 :PUBLIC_callProgram 
 :PUBLIC_callProgram {tab}Syntax:
+:PUBLIC_callProgram 
 :PUBLIC_callProgram {tab}{tab}{batch-name} callProgram [programPath] [executableName] [someParameters]
 :PUBLIC_callProgram 
 :PUBLIC_callProgram 
@@ -328,3 +330,18 @@
 :PUBLIC_callProgram {tab}{tab}[executableName]{tab}the name of an executable
 :PUBLIC_callProgram {tab}{tab}[someParameters]{tab}some parameters
 :PUBLIC_callProgram 
+
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties The subroutine loads properties from the specified file (i.e. the file
+:PUBLIC_loadProperties is processed and for each entry a environment variable is set).
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties {tab}Syntax:
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties {tab}{tab}{batch-name} loadProperties [fileName]
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties {tab}Parameters:
+:PUBLIC_loadProperties 
+:PUBLIC_loadProperties {tab}{tab}[fileName]{tab}the relative of absolute path of a property file
+:PUBLIC_loadProperties 

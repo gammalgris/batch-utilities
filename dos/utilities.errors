@@ -61,3 +61,9 @@ NoExecutableSpecifiedError.message@The subroutine with the name {1} tries to cal
 
 FailedInvocationError.code@25
 FailedInvocationError.message@The subroutine with the name {1} called an external program and an error occurred^^^!
+
+NonexistantFileError.code@26
+NonexistantFileError.message@The subroutine with the name {1} needs to read from the file {2} but it doesn't exist^^^!
+
+MissingDeclarationError.code@27
+MissingDeclarationError.message@The subroutine with the name {1} expects a declaration but none was specified^^^!

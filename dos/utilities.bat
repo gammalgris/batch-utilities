@@ -1191,6 +1191,52 @@ goto END
 goto END
 
 
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void loadProperties(String filename)
+@rem ---
+@rem ---   The subroutine loads properties from the specified file (i.e. the file
+@rem ---   is processed and for each entry a environment variable is set).
+@rem ---
+@rem ---
+@rem ---   @param filename
+@rem ---          the relative of absolute path of a property file
+@rem ---
+
+:PUBLIC_loadProperties
+
+	set "_fileName=%1"
+	if '%_fileName%'=='' (
+
+		call:handleError MissingFileNameError %0
+		call:cleanUp
+		%return% %returnCode%
+	)
+	set "_fileName=%_fileName:"=%"
+
+
+	if not exist %_fileName% (
+
+		call:handleError NonexistantFileError %0 "%_fileName%"
+		call:cleanUp
+		%return% %returnCode%
+	)
+
+	for /F "tokens=*" %%a in (%_fileName%) do (
+
+		call:setProperty "%%a"
+		%ifError% (
+
+			%return%
+		)
+	)
+
+
+	set _fileName=
+
+%return%
+
+
 @rem ================================================================================
 @rem ===
 @rem ===   Internal Subroutines
@@ -1429,6 +1475,42 @@ exit /b
 :printErrorMessage
 
 	%cprintln% Error: %~1 1>&2
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void setProperty(String declaration)
+@rem ---
+@rem ---   The subroutine sets an environment variable according to the specified
+@rem ---   declaration. Referenced variables will be resolved.
+@rem ---
+@rem ---
+@rem ---   @param declaration
+@rem ---          the declaration of a property (e.g. propertyName=someValue)
+@rem ---
+
+:setProperty
+
+	set "_declaration=%1"
+	if '%_declaration%'=='' (
+
+		call:handleError MissingDeclarationError %0
+		%return% %returnCode%
+	)
+	set "_declaration=%_declaration:"=%"
+	if "%_declaration%"=="" (
+
+		call:handleError MissingDeclarationError %0
+		%return% %returnCode%
+	)
+
+
+	set "%_declaration%"
+
+
+	set _declaration=
 
 %return%
 
