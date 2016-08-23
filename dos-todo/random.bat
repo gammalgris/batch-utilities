@@ -27,10 +27,19 @@
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   Initialization
+@rem ---
+
+set "corePath=%~dp0..\core\"
+
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   Load prerequisites
 @rem ---
 
-call define-constants.bat 2>nul
+call %corePath%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
@@ -41,7 +50,7 @@ if "%ERRORLEVEL%"=="0" (
 	exit /b 2
 )
 
-call define-macros.bat 2>nul
+call %corePath%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK

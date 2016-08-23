@@ -24,6 +24,18 @@
 
 @echo off
 
+@rem ================================================================================
+@rem ===
+@rem ===   void main(String aSubroutine, String... someParameters)
+@rem ===
+@rem ===   This batch script is a template for smaller scripts.
+@rem ===
+@rem ===
+@rem ===   @param aSubroutine
+@rem ===          the name of a subroutine
+@rem ===   @param someParameters
+@rem ===          parameters required by the subroutine
+@rem ===
 
 @rem --------------------------------------------------------------------------------
 @rem ---
@@ -37,6 +49,7 @@ set "fullBatchPath=%~dpnx0"
 set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
 set "errorsFile=%~dp0%~n0%ERRORS_FILE_SUFFIX%"
 set subroutineName=%1
+set "corePath=%~dp0..\core\"
 
 
 @rem --------------------------------------------------------------------------------
@@ -44,7 +57,7 @@ set subroutineName=%1
 @rem ---   Load prerequisites
 @rem ---
 
-call %~dp0%define-constants.bat 2>nul
+call %corePath%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
@@ -55,7 +68,7 @@ if "%ERRORLEVEL%"=="0" (
 	exit /b 3
 )
 
-call %~dp0%define-macros.bat 2>nul
+call %corePath%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
@@ -301,6 +314,7 @@ exit /b
 	set infoFile=
 	set errorsFile=
 	set subroutineName=
+	set corePath=
 
 %return%
 

@@ -65,5 +65,11 @@ FailedInvocationError.message@The subroutine with the name {1} called an externa
 NonexistantFileError.code@26
 NonexistantFileError.message@The subroutine with the name {1} needs to read from the file {2} but it doesn't exist^^^!
 
-MissingDeclarationError.code@27
+NonexistantDirectoryError.code@27
+NonexistantDirectoryError.message@The subroutine with the name {1} expects a directory but no valid directory was specified ^({2}^)^^^!
+
+MissingDeclarationError.code@28
 MissingDeclarationError.message@The subroutine with the name {1} expects a declaration but none was specified^^^!
+
+MissingDaysError.code@29
+MissingDaysError.message@The subroutine with the name {1} expects a threshold for days but none was specified^^^!

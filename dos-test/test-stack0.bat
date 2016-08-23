@@ -24,12 +24,25 @@
 
 @Echo Off
 
+@rem ================================================================================
+@rem ===
+@rem ===   void main()
+@rem ===
+@rem ===   This batch script contains a collection of unit tests.
+@rem ===
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   Initialization
+@rem ---
+
 set ALL_TESTS=0
 set FAILED_TESTS=0
 set SUCCESSFUL_TESTS=0
 
-set "BASEDIR=..\dos\"
-set "STACK_DIR=%BASEDIR%stack0\"
+set "BASEDIR=%~dp0..\dos\"
+set "STACK_DIR=%BASEDIR%bin\stack\"
+set "corePath=%BASEDIR%core\"
 
 
 @rem --------------------------------------------------------------------------------
@@ -37,25 +50,25 @@ set "STACK_DIR=%BASEDIR%stack0\"
 @rem ---   Load prerequisites
 @rem ---
 
-call %BASEDIR%define-constants.bat 2>nul
+call %corePath%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:printErrorMessage "^(%0^) Unable to initialize constants!"
+	echo Error: Unable to initialize constants! >&2
 	exit /b 2
 )
 
-call %BASEDIR%define-macros.bat 2>nul
+call %corePath%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:printErrorMessage "^(%0^) Unable to initialize macros!"
+	echo Error: Unable to initialize macros! >&2
 	exit /b 3
 )
 

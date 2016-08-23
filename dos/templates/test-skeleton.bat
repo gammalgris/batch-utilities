@@ -24,13 +24,24 @@
 
 @Echo Off
 
+@rem ================================================================================
+@rem ===
+@rem ===   void main()
+@rem ===
+@rem ===   This batch script contains a collection of unit tests.
+@rem ===
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   Initialization
+@rem ---
+
 set ALL_TESTS=0
 set FAILED_TESTS=0
 set SUCCESSFUL_TESTS=0
 
-set "BASEDIR=..\dos\"
-set "CORE_DIR=%BASEDIR%core\"
-set "STACK_DIR=%BASEDIR%stack\"
+set "BASEDIR=%~dp0..\dos\"
+set "corePath=%~dp0..\core\"
 
 
 @rem --------------------------------------------------------------------------------
@@ -38,25 +49,25 @@ set "STACK_DIR=%BASEDIR%stack\"
 @rem ---   Load prerequisites
 @rem ---
 
-call %BASEDIR%define-constants.bat 2>nul
+call %corePath%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:printErrorMessage "^(%0^) Unable to initialize constants!"
+	echo Error: Unable to initialize constants! >&2
 	exit /b 2
 )
 
-call %BASEDIR%define-macros.bat 2>nul
+call %corePath%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
 
 ) else (
 
-	call:printErrorMessage "^(%0^) Unable to initialize macros!"
+	echo Error: Unable to initialize macros! >&2
 	exit /b 3
 )
 
@@ -65,12 +76,8 @@ if "%ERRORLEVEL%"=="0" (
 @rem The tests within this test suite are defined.
 @rem
 
-set test.length=5
-set test[1]=:testInitLocalContext
-set test[2]=:testDeleteInitializedLocalContext
-set test[3]=:testDeleteUninitializedLocalContext
-set test[4]=:testInitTwoLocalContexts
-set test[5]=:testRestorePreviousLocalContext
+set test.length=1
+set test[1]=:testFirst
 
 set MIN=1
 set MAX=%test.length%
@@ -83,7 +90,7 @@ set test.order=
 @rem
 
 %cprintln%.
-%cprint% determine random order ..
+%cprint% determine random order 
 
 :loop
 
@@ -96,7 +103,7 @@ call:isCompleteSet test.order %MIN% %MAX%
 	goto loop
 )
 
-%cprintln%  done.
+%cprintln% done.
 
 
 @rem
@@ -134,7 +141,6 @@ set ALL_TESTS=
 set SUCCESSFUL_TESTS=
 
 set BASEDIR=
-set STACK_DIR=
 
 
 if "%FAILED_TESTS%"=="0" (
@@ -156,19 +162,20 @@ if "%FAILED_TESTS%"=="0" (
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void testInitLocalContext()
+@rem ---   void testFirst()
 @rem ---
-@rem ---   Tries to initialize a local context.
+@rem ---   A test dummy.
 @rem ---
 
-:testInitLocalContext
+:testFirst
 
 	call:beforeTest
+	set a=
 
 
 	call:runTest %0
 
-	call %CORE_DIR%initLocalContext
+	echo first test
 	%ifError% (
 
 		call:failTest %0
@@ -179,216 +186,7 @@ if "%FAILED_TESTS%"=="0" (
 	)
 
 
-	call:afterTest
-
-%return%
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void testInitTwoLocalContexts()
-@rem ---
-@rem ---   Tries to initialize two local contexts.
-@rem ---
-
-:testInitTwoLocalContexts
-
-	call:beforeTest
-
-
-	call %CORE_DIR%initLocalContext
-
-	set context1=%LOCAL%
-	if '%context1%'=='' (
-
-		goto testInitTwoLocalContexts_failure
-	)
-
-
-	call:runTest %0
-
-	call %CORE_DIR%initLocalContext
-
-	set context2=%LOCAL%
-	if '%context2%'=='' (
-
-		goto testInitTwoLocalContexts_failure
-	)
-
-
-	:testInitTwoLocalContexts_checkContexts
-
-	if '%context1%'=='%context2%' (
-
-		goto testInitTwoLocalContexts_failure
-
-	) else (
-
-		goto testInitTwoLocalContexts_success
-	)
-
-	:testInitTwoLocalContexts_failure
-
-	call:failTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testInitTwoLocalContexts_success
-
-	call:passTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testInitTwoLocalContexts_end
-
-	set context1=
-	set context2=
-
-	call:afterTest
-
-%return%
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void testDeleteInitializedLocalContext()
-@rem ---
-@rem ---   Tries to delete a local context which has been initialized.
-@rem ---
-
-:testDeleteInitializedLocalContext
-
-	call:beforeTest
-
-	call %CORE_DIR%initLocalContext
-
-	call:runTest %0
-
-	call %CORE_DIR%deleteLocalContext
-	%ifError% (
-
-		call:failTest %0
-
-	) else (
-
-		call:passTest %0
-	)
-
-
-	call:afterTest
-
-%return%
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void testDeleteUninitializedLocalContext()
-@rem ---
-@rem ---   Tries to delete a local context without a local context being initialized.
-@rem ---
-
-:testDeleteUninitializedLocalContext
-
-	call:beforeTest
-
-
-	call:runTest %0
-
-	call %CORE_DIR%deleteLocalContext 2>&1 | findstr /L %STACK_NOT_AVAILABLE_MESSAGE%
-	%ifError% (
-
-		call:failTest %0
-
-	) else (
-
-		call:passTest %0
-	)
-
-
-	call:afterTest
-
-%return%
-
-
-@rem --------------------------------------------------------------------------------
-@rem ---
-@rem ---   void testRestorePreviousLocalContext()
-@rem ---
-@rem ---   Tries to restore a previous local context.
-@rem ---
-
-:testRestorePreviousLocalContext
-
-	call:beforeTest
-
-	set currentContext=
-	set context1=
-	set context2=
-
-
-	call %CORE_DIR%initLocalContext
-
-	echo DEBUG:: context1^=%context1%
-	set context1=%LOCAL%
-	if '%context1%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: context1^=%context1%
-
-	call %CORE_DIR%initLocalContext
-
-	echo DEBUG:: context2^=%context2%
-	set context2=%LOCAL%
-	if '%context2%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: context2^=%context2%
-
-
-	call:runTest %0
-
-	call %CORE_DIR%deleteLocalContext
-
-	echo DEBUG:: currentContext^=%currentContext%
-	set currentContext=%LOCAL%
-	if '%currentContext%'=='' (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-	echo DEBUG:: currentContext^=%currentContext%
-
-
-	:testRestorePreviousLocalContext_checkContexts
-
-	if '%context1%'=='%currentContext%' (
-
-		goto testRestorePreviousLocalContext_success
-
-	) else (
-
-		goto testRestorePreviousLocalContext_failure
-	)
-
-	:testRestorePreviousLocalContext_failure
-
-	call:failTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testRestorePreviousLocalContext_success
-
-	call:passTest %0
-	goto testInitTwoLocalContexts_end
-
-
-	:testRestorePreviousLocalContext_end
-
-	set currentContext=
-	set context1=
-	set context2=
-
+	set a=
 	call:afterTest
 
 %return%
@@ -506,8 +304,7 @@ if "%FAILED_TESTS%"=="0" (
 
 :beforeTest
 
-	call %STACK_DIR%deleteStack.bat
-	set STACK_NOT_AVAILABLE_MESSAGE="The stack is not available"
+	rem ToDo
 	
 %return%
 
@@ -521,8 +318,7 @@ if "%FAILED_TESTS%"=="0" (
 
 :afterTest
 
-	call %STACK_DIR%deleteStack.bat
-	set STACK_NOT_AVAILABLE_MESSAGE=
+	rem ToDo
 
 %return%
 

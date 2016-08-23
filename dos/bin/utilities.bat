@@ -24,6 +24,18 @@
 
 @echo off
 
+@rem ================================================================================
+@rem ===
+@rem ===   void main(String aSubroutine, String... someParameters)
+@rem ===
+@rem ===   This batch script contains a collection of utility functions.
+@rem ===
+@rem ===
+@rem ===   @param aSubroutine
+@rem ===          the name of a subroutine
+@rem ===   @param someParameters
+@rem ===          parameters required by the subroutine
+@rem ===
 
 @rem --------------------------------------------------------------------------------
 @rem ---
@@ -37,6 +49,7 @@ set "fullBatchPath=%~dpnx0"
 set "infoFile=%~dp0%~n0%INFO_FILE_SUFFIX%"
 set "errorsFile=%~dp0%~n0%ERRORS_FILE_SUFFIX%"
 set subroutineName=%1
+set "corePath=%~dp0..\core\"
 
 
 @rem --------------------------------------------------------------------------------
@@ -44,7 +57,7 @@ set subroutineName=%1
 @rem ---   Load prerequisites
 @rem ---
 
-call %~dp0%define-constants.bat 2>nul
+call %corePath%define-constants.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
@@ -55,7 +68,7 @@ if "%ERRORLEVEL%"=="0" (
 	exit /b 3
 )
 
-call %~dp0%define-macros.bat 2>nul
+call %corePath%define-macros.bat 2>nul
 if "%ERRORLEVEL%"=="0" (
 
 	@rem OK
@@ -97,28 +110,6 @@ goto %PUBLIC_PREFIX%%subroutineName%
 @rem ===
 @rem ===   Public Subroutines
 @rem ===
-
-@rem ===
-@rem ===   TODO
-@rem ===
-@rem ===   - provide compatibility informations (e.g. WinXP, Windows Vista, Windows 7,
-@rem ===     Windows8, Windows 8.1) for each subroutine.
-@rem ===
-@rem ===   - provide unit tests for the various public subroutines. This serves two purposes:
-@rem ===     1) to check correctness and 2) to provide good and bad examples of usage.
-@rem ===
-@rem ===   - check the scope of "local variables" and "global variable". How is this aspect
-@rem ===     handled by the batch interpreter, especially with regard to variable names that
-@rem ===     are more commonly used?
-@rem ===
-@rem ===   - the clean up doesn't clean up variables which are defined inside a subroutine. If
-@rem ===     a subroutine runs into an error there will still be variables that haven't been
-@rem ===     cleaned up.
-@rem ===
-@rem ===   - the command 'set /P' changes the error level even if the call seemed successful.
-@rem ===     This needs further investigation.
-@rem ===
-
 
 @rem --------------------------------------------------------------------------------
 @rem ---
@@ -948,7 +939,41 @@ goto END
 
 :PUBLIC_listOldDirectories
 
-	@rem TODO
+	call:checkAndAssignParameter baseDirectory %1
+	%ifError% (
+
+		call:handleError MissingBaseDirectoryError %0
+		call:cleanUp
+		%return% %returnCode%
+	)
+
+	if "%baseDirectory:~-1%" neq "%BACKSLASH%" (
+
+		set "baseDirectory=%baseDirectory%%BACKSLASH%"
+	)
+
+	if not exist %baseDirectory% (
+
+		call:handleError NonexistantDirectoryError %0 %baseDirectory%
+		call:cleanUp
+		%return% %returnCode%
+	)
+
+
+	call:checkAndAssignParameter days %2
+	%ifError% (
+
+		call:handleError MissingDaysError %0
+		call:cleanUp
+		%return% %returnCode%
+	)
+
+
+	forfiles /D -%days% /P %baseDirectory% /C "cmd /c if /i @isdir==%TRUE% ( echo @path )" 2>nul
+
+
+	set baseDirectory=
+	set days=
 
 goto END
 
@@ -1398,6 +1423,7 @@ exit /b
 	set infoFile=
 	set errorsFile=
 	set subroutineName=
+	set corePath=
 
 %return%
 
