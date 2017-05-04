@@ -1,7 +1,7 @@
 @rem
 @rem The MIT License (MIT)
 @rem
-@rem Copyright (c) 2014 Kristian Kutin
+@rem Copyright (c) 2017 Kristian Kutin
 @rem
 @rem Permission is hereby granted, free of charge, to any person obtaining a copy
 @rem of this software and associated documentation files (the "Software"), to deal
