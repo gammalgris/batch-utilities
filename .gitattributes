@@ -6,6 +6,11 @@
 *.info eol=crlf
 
 
+# Bash scripts
+
+*.sh eol=lf
+
+
 # XML
 
 *.xml eol=lf
