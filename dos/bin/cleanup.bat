@@ -53,13 +53,13 @@ if '%option%'=='' (
 set "option=%option:"=%"
 
 
-if "%option%"=="%SCAN_FLAG%" (
+if "%option%"=="%SCAN_OPTION%" (
 
 	call:listFiles %2 %3
 	%return%
 )
 
-if "%option%"=="%DELETE_FLAG%" (
+if "%option%"=="%DELETE_OPTION%" (
 
 	call:deleteFiles %2 %3
 	%return%
@@ -233,7 +233,7 @@ call:logError "^(%0^) The specified option '%option%' is unknown!"
 	set "__numberOfDays=%__numberOfDays:"=%"
 
 
-	forfiles /D -%__numberOfDays% /P %__baseDirectory% /C "cmd /c if /i @isdir==%FALSE% ( echo @path )" 2>nul
+	forfiles /S /D -%__numberOfDays% /P %__baseDirectory% /C "cmd /c if /i @isdir==%FALSE% ( echo @path )" 2>nul
 
 
 	set __baseDirectory=
