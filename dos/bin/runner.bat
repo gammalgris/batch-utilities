@@ -45,7 +45,7 @@ call:defineMacros
 set "scriptFile=%1"
 if '%scriptFile%'=='' (
 
-	%cprintln% ^(%0^) No script file was specified!
+	%cprintln% ^(%0^) No script file was specified! 1>&2
 	%return% 2
 )
 set "scriptFile=%scriptFile:"=%"
@@ -127,7 +127,7 @@ set parameters=
 	set "_variableName=%1"
 	if '%_variableName%'=='' (
 	
-		%cprintln% ^(%0^) No variable name was specified!
+		%cprintln% ^(%0^) No variable name was specified! 1>&2
 		%return% 2
 	)
 	set "_variableName=%_variableName:"=%"
