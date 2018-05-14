@@ -179,7 +179,7 @@ call:logError "^(%0^) The specified option '%option%' is unknown!"
 	set "__text=%1"
 	if '%__text%'=='' (
 	
-		call:logError "^(%0^) No text was specified!"
+		echo ^(%0^) No text was specified! >&2
 		%return% 2
 	)
 	set "__text=%__text:"=%"

@@ -51,7 +51,7 @@ if '%scriptFile%'=='' (
 set "scriptFile=%scriptFile:"=%"
 set "scriptFile=%~dp0%scriptFile%"
 
-echo running %scriptFile%...
+%cprintln% running %scriptFile%...
 
 
 set parameters=
@@ -127,7 +127,7 @@ set parameters=
 	set "_variableName=%1"
 	if '%_variableName%'=='' (
 	
-		%cprintln% ^(%0^) No variable name was specified! 1>&2
+		call:logError "^(%0^) No variable name was specified!"
 		%return% 2
 	)
 	set "_variableName=%_variableName:"=%"
@@ -150,5 +150,41 @@ set parameters=
 
 	set _variableName=
 	set _parameter=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void logError(String aText)
+@rem ---
+@rem ---   The subroutine logs the specified error text.
+@rem ---
+@rem ---
+@rem ---   @param aText
+@rem ---          an error text
+@rem ---
+
+:logError
+
+	set "__text=%1"
+	if '%__text%'=='' (
+	
+		%cprintln% ^(%0^) No text was specified! >&2
+		%return% 2
+	)
+	set "__text=%__text:"=%"
+
+
+	(
+		%cprintln% %date%::%time%::ERROR::%__text%
+	) 1>&2
+
+	(
+		%cprintln% %date%::%time%::ERROR::%__text%
+	) >> %LOGFILE%
+
+
+	set __text=
 
 %return%
