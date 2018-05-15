@@ -40,12 +40,16 @@
 @rem ===
 
 call:defineMacros
+call:defineConstants
 
+
+set "prefix=%0"
 
 set "scriptFile=%1"
 if '%scriptFile%'=='' (
 
-	%cprintln% ^(%0^) No script file was specified! 1>&2
+	call:logError %prefix%: No script file was specified!
+	call:logError The runner stopped due to an error.
 	%return% 2
 )
 set "scriptFile=%scriptFile:"=%"
@@ -66,17 +70,38 @@ set parameters=
 	)
 
 	call:addParameter parameters %1
+	%ifError% (
+
+		call:logError An unexpected error occurred while building the parameter string!
+		call:logError The runner stopped due to an error.
+	)
 
 	goto while_processParameters
 
 :elihw_processParameters
 
 
+if not exist "%scriptFile%" (
+
+	call:logError %prefix%: The specified script file %scriptFile% doesn't exist!
+	call:logError The runner stopped due to an error.
+	%return% 3
+)
+
+
+call:logInfo The runner executes the specified powershell script.
+call:logInfo script: %scriptFile%
+call:logInfo parameters: %parameters%
+
+
 start /B /WAIT powershell.exe -ExecutionPolicy ByPass -File "%scriptFile%" %parameters%
 %ifError% (
 
-	%return%
+	call:logError The powershell script stopped due to an error!
+	%return% 4
 )
+
+call:logInfo The powershell script has stopped.
 
 
 set scriptFile=
@@ -111,6 +136,24 @@ set parameters=
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   void defineConstants()
+@rem ---
+@rem ---   The subroutine defines required constants.
+@rem ---
+
+:defineConstants
+
+	set TRUE=TRUE
+	set FALSE=FALSE
+
+	set SCRIPTFILE=%~n0%~x0
+	set LOGFILE=%~n0.log
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   void addParameter(String aVariableName, String aParameter)
 @rem ---
 @rem ---   This subroutine adds the specified parameter to the specified variable.
@@ -127,7 +170,7 @@ set parameters=
 	set "_variableName=%1"
 	if '%_variableName%'=='' (
 	
-		call:logError "^(%0^) No variable name was specified!"
+		call:logError %0: No variable name was specified!
 		%return% 2
 	)
 	set "_variableName=%_variableName:"=%"
@@ -143,7 +186,7 @@ set parameters=
 	setlocal EnableDelayedExpansion
 
 		set "_value=!%_variableName%!"
-		set "_newValue=%_value% %_parameter%"
+		set "_newValue=%_value% "%_parameter%""
 
 	endlocal & set "%_variableName%=%_newValue%"
 
@@ -156,35 +199,47 @@ set parameters=
 
 @rem --------------------------------------------------------------------------------
 @rem ---
-@rem ---   void logError(String aText)
+@rem ---   void logInfo(String... someTexts)
+@rem ---
+@rem ---   The subroutine logs the specified info text.
+@rem ---
+@rem ---
+@rem ---   @param someTexts
+@rem ---          any number of text parameters with info messages
+@rem ---
+
+:logInfo
+
+	(
+		%cprintln% %date%::%time%:: INFO::%*
+	) 1>&2
+
+	(
+		%cprintln% %date%::%time%:: INFO::%*
+	) >> %LOGFILE%
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void logError(String... someTexts)
 @rem ---
 @rem ---   The subroutine logs the specified error text.
 @rem ---
 @rem ---
-@rem ---   @param aText
-@rem ---          an error text
+@rem ---   @param someTexts
+@rem ---          any number of text parameters with error details
 @rem ---
 
 :logError
 
-	set "__text=%1"
-	if '%__text%'=='' (
-	
-		%cprintln% ^(%0^) No text was specified! >&2
-		%return% 2
-	)
-	set "__text=%__text:"=%"
-
-
 	(
-		%cprintln% %date%::%time%::ERROR::%__text%
+		%cprintln% %date%::%time%::ERROR::%*
 	) 1>&2
 
 	(
-		%cprintln% %date%::%time%::ERROR::%__text%
+		%cprintln% %date%::%time%::ERROR::%*
 	) >> %LOGFILE%
-
-
-	set __text=
 
 %return%
