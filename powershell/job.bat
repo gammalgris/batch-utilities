@@ -39,6 +39,9 @@
 @rem ===          all remaining command line parameters
 @rem ===
 
+cd /d %~dp0
+
+
 call:defineMacros
 call:defineConstants
 
@@ -94,7 +97,9 @@ call:logInfo script: %scriptFile%
 call:logInfo parameters: %parameters%
 
 
-start /B /WAIT powershell.exe -ExecutionPolicy ByPass -File "%scriptFile%" %parameters%
+(
+	start /B /WAIT powershell.exe -ExecutionPolicy ByPass -File "%scriptFile%" %parameters%
+) >> "%LOGFILE%"
 %ifError% (
 
 	call:logError The powershell script stopped due to an error!
