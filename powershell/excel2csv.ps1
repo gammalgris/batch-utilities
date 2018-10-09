@@ -41,6 +41,10 @@
 
 	.PARAMETER outputDirectory
 		The parameter must contain a directory path (relative or absolute).
+
+	.PARAMETER worksheetName
+		The parameter is optional and contains the name of the worksheet which
+		is to be extracted.
 #>
 
 param(
@@ -48,7 +52,11 @@ param(
 	$inputFile,
 
 	[String]
-	$outputDirectory
+	$outputDirectory,
+
+	[String]
+	$worksheetName
+
 )
 
 
@@ -250,6 +258,76 @@ function exportDocumentAsCsv() {
 
 <#
 	.DESCRIPTION
+		Exports the specified worksheet from the specified Excel document as a CSV file.
+
+	.SYNOPSIS
+		Exports worksheet from the Excel document as CSV file.
+
+	.PARAMETER document
+		The specified Excel document.
+
+	.PARAMETER basePath
+		A relative or absolute file path for output files.
+
+	.PARAMETER worksheetName
+		The name of a worksheet within the Excel document.
+#>
+function exportWorksheetAsCsv() {
+
+	param(
+		[Parameter(Mandatory = $true)]
+		[System.MarshalByRefObject]
+		$document,
+
+		[Parameter(Mandatory = $true)]
+		[String]
+		$basePath,
+
+		[Parameter(Mandatory = $true)]
+		[String]
+		$worksheetName
+	)
+
+	Begin {
+
+		$ErrorActionPreference = $HALT_ON_ALL_ERRORS;
+	}
+
+	Process {
+
+		[boolean] $found = $false;
+		[System.MarshalByRefObject] $currentWorksheet = $null;
+
+		foreach ($worksheet in $document.Worksheets) {
+
+			$currentWorksheet = $worksheet;
+			[String] $actualWorksheetName = $currentWorksheet.Name;
+
+			if ($worksheetName -eq $actualWorksheetName) {
+
+				$found = $true;
+				break;
+			}
+		}
+
+		if (!$found) {
+
+			throw "No Worksheet with the name `"$worksheetName`" exists!";
+		}
+
+		saveWorksheetAsCsv $document $currentWorksheet $basePath;
+	}
+
+	End {
+
+		$ErrorActionPreference = $DEFAULT_ERROR_HANDLING;
+	}
+
+}
+
+
+<#
+	.DESCRIPTION
 		Save the specified worksheet as CSV file.
 
 	.SYNOPSIS
@@ -380,8 +458,23 @@ if (!($directoryExists)) {
 [System.__ComObject] $excelInstance = newExcelInstance;
 [System.MarshalByRefObject] $excelDocument = loadExcelDocument $excelInstance $resolvedPath;
 
+try {
 
-exportDocumentAsCsv $excelDocument $resolvedOutputPath;
+	if (!$worksheetName) {
 
+		exportDocumentAsCsv $excelDocument $resolvedOutputPath;
 
-closeExcelInstance $excelInstance;
+	} else {
+
+		exportWorksheetAsCsv $excelDocument $resolvedOutputPath $worksheetName;
+	}
+
+} catch {
+
+	Write-Host $_;
+	exit 5;
+
+} finally {
+
+	closeExcelInstance $excelInstance;
+}
