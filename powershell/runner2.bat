@@ -223,7 +223,7 @@ set parameters=
 
 	(
 		%cprintln% %date%::%time%::%username%:: INFO::%*
-	) 1>&2
+	)
 
 	:logInfo_skipConsole
 

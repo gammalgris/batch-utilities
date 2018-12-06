@@ -77,7 +77,7 @@ if "%ERRORLEVEL%"=="0" (
 @rem The tests within this test suite are defined.
 @rem
 
-set test.length=11
+set test.length=14
 set test[1]=:testIsInitializedOnInitializedStack
 set test[2]=:testPopOnEmptyStack
 set test[3]=:testPeekOnEmptyStack
@@ -89,6 +89,9 @@ set test[8]=:testIsInitializedOnUnitializedStack
 set test[9]=:testPushOnUnitializedStack
 set test[10]=:testPeekOnUnitializedStack
 set test[11]=:testPopOnUnitializedStack
+set test[12]=:testPeekPreviousElement
+set test[13]=:testSizeEmptyStack
+set test[14]=:testSizeFilledStack
 
 set MIN=1
 set MAX=%test.length%
@@ -523,6 +526,114 @@ if "%FAILED_TESTS%"=="0" (
 		call:passTest %0
 	)
 
+
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testPeekPreviousElement()
+@rem ---
+@rem ---   Checks if removing an element works as expected..
+@rem ---
+
+:testPeekPreviousElement
+
+	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
+
+	set PREVIOUS_ELEMENT=Hello
+	set LAST_ELEMENT=World
+
+	call %STACK_DIR%push %PREVIOUS_ELEMENT%
+	call %STACK_DIR%push %LAST_ELEMENT%
+	call %STACK_DIR%pop a
+	call %STACK_DIR%peek a
+
+	call:runTest %0
+
+	if '%a%'=='%PREVIOUS_ELEMENT%' (
+
+		call:passTest %0
+
+	) else (
+
+		call:failTest %0
+	)
+
+
+	set PREVIOUS_ELEMENT=
+	set LAST_ELEMENT=
+	set a=
+
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testSizeEmptyStack()
+@rem ---
+@rem ---   Checks if the size is correctly calculated for an empty stack.
+@rem ---
+
+:testSizeEmptyStack
+
+	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
+
+	call:runTest %0
+
+	for /f %%i in ('%STACK_DIR%size') do (
+
+		set size=%%i
+	)
+
+	if '%size%'=='0' (
+
+		call:passTest %0
+
+	) else (
+
+		call:failTest %0
+	)
+
+	call:afterTest
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void testSizeFilledStack()
+@rem ---
+@rem ---   Checks if the size is correctly calculated for a filled stack.
+@rem ---
+
+:testSizeFilledStack
+
+	call:beforeTest
+	call %STACK_DIR%initStack >nul 2>&1
+	call %STACK_DIR%push Hallo
+
+	call:runTest %0
+
+	for /f %%i in ('%STACK_DIR%size') do (
+
+		set size=%%i
+	)
+
+	if '%size%'=='1' (
+
+		call:passTest %0
+
+	) else (
+
+		call:failTest %0
+	)
 
 	call:afterTest
 
