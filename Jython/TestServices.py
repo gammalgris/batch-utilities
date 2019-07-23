@@ -20,12 +20,21 @@ edit()
 startEdit()
 
 
-if ServerHelper.isWebServiceState(service, 'STATE_ACTIVE'):
-	DeploymentHelper.stopWebService(service)
-else:
-	print 'The web service \'' + service + '\' is not running.'
+undeployRequired = True;
 
-DeploymentHelper.undeployWebService(service)
+try:
+	ServerHelper.getWebService(service)
+except:
+	print 'The web service \'' + service + '\' does not exist.'
+	undeployRequired = False
+
+
+if undeployRequired:
+	if ServerHelper.isWebServiceState(service, 'STATE_ACTIVE'):
+		DeploymentHelper.stopWebService(service)
+	else:
+		print 'The web service \'' + service + '\' is not running.'
+		DeploymentHelper.undeployWebService(service)
 
 
 sleep(10)
