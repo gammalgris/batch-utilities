@@ -4,9 +4,9 @@ import ServerHelper
 import DeploymentHelper
 
 
-server = 'albatros01'
-service = 'TestServices'
-file = 'D:\Workspace\TestServices\deployment\TestServices.ear'
+server = 'a-server-name'
+service = 'a-service-or-application-name'
+file = 'the-war-or-ear-file-path'
 
 
 serverState = ServerHelper.getServerState(server)
@@ -43,4 +43,11 @@ sleep(10)
 DeploymentHelper.deployWebService(service, file, server)
 DeploymentHelper.startWebService(service)
 
+
+save()
+stopEdit(defaultAnswer = 'y')
+
+sleep(5)
+
+startEdit()
 activate(60000, block='true')
