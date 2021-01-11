@@ -71,7 +71,7 @@ echo Initialization is done.
 set variableNames.length=4
 set variableNames[1]=ORACLE_HOME
 set variableNames[2]=JAVA_HOME
-set variableNames[3]=JDEV_HOME_DIR
+set variableNames[3]=JDEV_USER_DIR
 set variableNames[4]=JDEV_INSTALL_DIR
 
 
@@ -291,6 +291,8 @@ call "%JDEV_EXE%"
 	)
 
 
+	set _actualVariable=
+	set _actualPath=
 	set _variableName=
 	set _retained=
 
