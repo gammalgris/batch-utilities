@@ -38,10 +38,11 @@ call:resetErrorlevel
 
 @rem define additional environment variables which are stored in files
 
-set propertyFiles.length=3
-set "propertyFiles[1]=%~dp0\java.properties"
-set "propertyFiles[2]=%~dp0\oracle.properties"
-set "propertyFiles[3]=%~dp0\jdev.properties"
+set propertyFiles.length=4
+set "propertyFiles[1]=%~dsp0\java.properties"
+set "propertyFiles[2]=%~dsp0\oracle.properties"
+set "propertyFiles[3]=%~dsp0\jdev.properties"
+set "propertyFiles[4]=%~dsp0\ant.properties"
 
 
 for /L %%i in (1, 1, %propertyFiles.length%) do (
@@ -68,11 +69,12 @@ echo Initialization is done.
 
 @rem check plausibilities
 
-set variableNames.length=4
+set variableNames.length=5
 set variableNames[1]=ORACLE_HOME
 set variableNames[2]=JAVA_HOME
 set variableNames[3]=JDEV_USER_DIR
 set variableNames[4]=JDEV_INSTALL_DIR
+set variableNames[5]=ANT_HOME
 
 
 for /L %%i in (1, 1, %variableNames.length%) do (
@@ -190,11 +192,50 @@ call "%JDEV_EXE%"
 
 	for /F "tokens=*" %%a in (%_filePath%) do (
 
-		call set %%a
+		call:setVariable "%%a"
 	)
 
 
 	set _filePath=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
+@rem ---   void setVariable(String _line)
+@rem ---
+@rem ---   The subroutine loads the properties in the specified file.
+@rem ---
+@rem ---
+@rem ---   @param _line
+@rem ---          a line from a properties file
+@rem ---
+
+:setVariable
+
+	set "_line=%1"
+	if '%_line%'=='' (
+
+		echo ^(%0^) No line was specified! 1>&2
+		%return% 2
+	)
+	set "_line=%_line:"=%"
+
+
+	set "_firstChar=%_line:~0,1%"
+
+	if '%_firstChar%'=='#' (
+
+		goto setVariable_skip
+	)
+
+	call set "%_line%"
+
+:setVariable_skip
+
+	set _firstChar=
+	set _line=
 
 %return%
 
