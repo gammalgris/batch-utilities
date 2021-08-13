@@ -74,6 +74,7 @@ set parameters=
 
 		call:logError An unexpected error occurred while building the parameter string!
 		call:logError The runner stopped due to an error.
+		%return% 2
 	)
 
 	goto while_processParameters
