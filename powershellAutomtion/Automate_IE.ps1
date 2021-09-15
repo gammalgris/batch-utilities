@@ -68,7 +68,6 @@ function startInternetExplorer() {
 	.PARAMETER handle
 		A handle on an instance of the internet explorer.
 #>
-
 function waitUntilReady() {
 
 	param {
@@ -113,7 +112,6 @@ function waitUntilReady() {
 	.PARAMETER id
 		The Id of a html element.
 #>
-
 function waitForElementById() {
 
 	param {
@@ -157,62 +155,117 @@ function waitForElementById() {
 
 }
 
+<#
+	.DESCRIPTION
+		Waits until one of the HTML elements with thespecified ID exists within the current
+		web page (which may still be loading). After a certain wait time a timeout exception
+		is thrown. Returns the ID of the HTML element which was identified.
+
+	.SYNOPSIS
+		Waits until a specific HTML Element exists.
+
+	.PARAMETER ie
+		A handle on an instance of the internet explorer
+
+	.PARAMETER id1
+		The ID of a html element.
+
+	.PARAMETER id2
+		The ID of a html element
+#>
+function waitForOneElementById() {
+
+	param(
+		[Parameter(Mandatory = $true)]
+		[System.__ComObject]
+		$ie,
+
+		[Parameter(Mandatory = $true)]
+		[String]
+		$id1,
+
+		[Parameter(Mandatory = $true)]
+		[String]
+		$id2
+	)
+
+	Process {
+
+		[int] $waited = waitUntilReady $ie;
+
+		[mshtml.HTMLDocumentClass] $doc = $ie.Document;
+
+		while ($TRUE) {
+
+			$element = $doc.IHTMLDocument3_getElementByID($id1);
+			if ($element) {
+
+				return $id1;
+			}
+
+			$element = $doc.IHTMLDocument3_getElementByID($id2);
+			if ($element) {
+
+				return $id2;
+			}
+
+			Start-Sleep -Seconds 1;
+			$waited++;
+
+			if ($waited -gt $DEFAULT_TIMEOUT) {
+
+				throw "Timeout Exception: The page couldn't be loaded! No element with the ID '$id1' or '$id2' exists!";
+		}
+	}
+
+}
+
 
 <#
 	.DESCRIPTION
-		Waits until the HTML element with the specified ID exists within the
-		current web page (which may still be loading). After a certain wait
-		time a timeout exception is thrown.
+		Tries to retrieve a handle on the process identified by the console window handle (HNWD).
 
 	.SYNOPSIS
-		Waits until a specific HTML element exists.
+		Tries to retrieve a handle on the process identified by the console window handle (HWND).
 
 	.PARAMETER handle
-		A handle on an instance of the internet explorer.
-
-	.PARAMETER id
-		The Id of a html element.
+		A console window handle
 #>
-
-function waitForElementById() {
+function connectIExplorer() {
 
 	param {
-		[Parameter(Mandatory =$True)]
-		[System.__ComObject]
-		$handle,
-		
-		[Parameter(Mandatory =$True)]
-		[String]
-		$id
+		$HWND
 	}
 
 	Process {
 
-		[int] $waited = waitUntilReady $handle;
+		$objectShellApp =New-Object -ComObject Shell.Application;
 
-		[mshtml.HTMLDocumentClass] $doc = $handle.Document;
-		[bool] $loop = $True;
+		try {
 
-		while($loop) {
+			$objNewIE = $objShellApp.Windows() | ?{$_.HWND -eq $HWND}
+			$objNewIE.Visible = $true;
 
-			$element = $doc.IHTMLDocument3_getElementByID($id);
-			if (!$element) {
+		} catch {
 
-				Start-Sleep -Seconds 1;
-				$waited++;
+			# It may happen that the Shell.Application does not find the window in a timely manner.
+			# Therefore wait and try again.
+			Write-Host "Waiting for page to be loaded ..."
+			Start-Sleep -Milliseconds 500
 
-			} else {
+			try {
 
-				$loop = $False;
-			}
+				$objNewIE = $objShellApp.Windows() | ?{$_.HWND -eq $HWND}
+				$objNewIE.Visible = $true;
 
-			if ($waited -gt $DEFAULT_TIMEOUT) {
+			} catch {
 
-				throw "Timeout Exception: The page couldn't be loaded! The element woith the ID '$id' doesn't exists.";
+				Write-Host "Could not retrieve the Com Object InternetExplorer. Aborting!" -ForegroundColor Red
+				$objNewIE = $null
 			}
 		}
 
-		return $id;
+		return $objNewIE
 	}
 
 }
@@ -223,3 +276,31 @@ function waitForElementById() {
 # ===   Main
 # ===
 
+# example
+#
+# [System.__ComObject] $ie = startInternetExplorer;
+# $hwnd = $ie.HWND;
+# $ie.navigate("some URL");
+#
+# Start-Sleep -Milliseconds 1000;
+# $ie = connectIExplorer $hwnd;
+#
+# [int] $waitTime = waitUntilReady $ie;
+#
+# [mshtml.HTMLDocumentClass] $doc = $ie.Document;
+#
+# waitForElementById $ie "some HTML element ID"
+# $element = $doc.IHTMLDocument3_getElementByID("some HTML element ID");
+#
+# # if element is input field
+# $element.value = some value
+#
+# # if element is link, image or button
+# $element = click();
+#
+# [String] $foundID = waitForOneElementById $ie "some HTML element ID" "another HTML element ID";
+# if ($foundID -eq "some HTML element ID") {
+#	...
+# } elseif ($foundID -eq "another HTML element ID")
+# 	...
+# }
