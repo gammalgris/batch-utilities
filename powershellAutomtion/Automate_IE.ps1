@@ -53,7 +53,7 @@ function startInternetExplorer() {
 
 		return $handle;
 	}
-	
+
 }
 
 
@@ -70,11 +70,11 @@ function startInternetExplorer() {
 #>
 function waitUntilReady() {
 
-	param {
-		[Parameter(Mandatory = $true)]
+	param (
+		[Parameter(mandatory = $true)]
 		[System.__ComObject]
 		$handle
-	}
+	)
 
 	Process {
 
@@ -114,22 +114,22 @@ function waitUntilReady() {
 #>
 function waitForElementById() {
 
-	param {
-		[Parameter(Mandatory =$true)]
+	param (
+		[Parameter(mandatory = $true)]
 		[System.__ComObject]
 		$handle,
 		
-		[Parameter(Mandatory =$true)]
+		[Parameter(mandatory = $true)]
 		[String]
 		$id
-	}
+	)
 
 	Process {
 
 		[int] $waited = waitUntilReady $handle;
 
 		[mshtml.HTMLDocumentClass] $doc = $handle.Document;
-		[bool] $loop = $True;
+		[bool] $loop = $true;
 
 		while($loop) {
 
@@ -141,7 +141,7 @@ function waitForElementById() {
 
 			} else {
 
-				$loop = $False;
+				$loop = $false;
 			}
 
 			if ($waited -gt $DEFAULT_TIMEOUT) {
@@ -152,7 +152,6 @@ function waitForElementById() {
 
 		return $id;
 	}
-
 }
 
 <#
@@ -176,15 +175,15 @@ function waitForElementById() {
 function waitForOneElementById() {
 
 	param(
-		[Parameter(Mandatory = $true)]
+		[Parameter(mandatory = $true)]
 		[System.__ComObject]
 		$ie,
 
-		[Parameter(Mandatory = $true)]
+		[Parameter(mandatory = $true)]
 		[String]
 		$id1,
 
-		[Parameter(Mandatory = $true)]
+		[Parameter(mandatory = $true)]
 		[String]
 		$id2
 	)
@@ -195,7 +194,7 @@ function waitForOneElementById() {
 
 		[mshtml.HTMLDocumentClass] $doc = $ie.Document;
 
-		while ($TRUE) {
+		while ($true) {
 
 			$element = $doc.IHTMLDocument3_getElementByID($id1);
 			if ($element) {
