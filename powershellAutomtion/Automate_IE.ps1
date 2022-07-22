@@ -71,7 +71,7 @@ function startInternetExplorer() {
 function waitUntilReady() {
 
 	param {
-		[Parameter(Mandatory = $True)]
+		[Parameter(Mandatory = $true)]
 		[System.__ComObject]
 		$handle
 	}
@@ -115,11 +115,11 @@ function waitUntilReady() {
 function waitForElementById() {
 
 	param {
-		[Parameter(Mandatory =$True)]
+		[Parameter(Mandatory =$true)]
 		[System.__ComObject]
 		$handle,
 		
-		[Parameter(Mandatory =$True)]
+		[Parameter(Mandatory =$true)]
 		[String]
 		$id
 	}
@@ -215,6 +215,7 @@ function waitForOneElementById() {
 			if ($waited -gt $DEFAULT_TIMEOUT) {
 
 				throw "Timeout Exception: The page couldn't be loaded! No element with the ID '$id1' or '$id2' exists!";
+			}
 		}
 	}
 
