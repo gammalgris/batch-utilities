@@ -1,7 +1,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2019 Kristian Kutin
+# Copyright (c) 2022 Kristian Kutin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,47 +22,38 @@
 # SOFTWARE.
 #
 
+class XmlHelper {
 
-<#
-	.DESCRIPTION
-		Shows an error dialog. This can be used from within a batch script.
+	static [void] checkDocument([xml] $document) {
 
-	.SYNOPSIS
-		Shows an error dialog.
+		if ($document.ChildNodes.Count -ne 2) {
 
-	.PARAM additionalDetails
-		The error text which should be displayed in the error dialog
-#>
+			throw 'The document is malformed (root mismatch)!';
+		}
+	}
 
-param(
-	[String]
-	$additionalDetails
-)
+	static [void] checkElement([System.Xml.XmlLinkedNode] $node, [String] $expectedName) {
 
+		if ($node.LocalName -ne $expectedName) {
 
-# ================================================================================
-# ===
-# ===   Initializations
-# ===
+			throw 'The specified xml element is invalid (expected=' + $expectedName + '; actual=' + $node.LocalName + ')!';
+		}
+	}
 
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");
-Add-Type -AssemblyName PresentationFramework;
+	static [void] checkAttribute([System.Xml.XmlLinkedNode] $node, [String] $expectedName) {
 
+		if (!($node.hasAttribute($expectedName))) {
 
-# ================================================================================
-# ===
-# ===   Main
-# ===
+			throw 'The specified xml element is invalid (element=' + $node.Name + '; missing attribute=' + $expectedName + ')!';
+		}
+	}
 
-[String] $errorMessage = "Error:: ";
+	static [void] checkChildNodes([System.Xml.XmlLinkedNode] $node, [int] $expectedCount) {
 
-if (![String]::IsNullOrEmpty($additionalDetails)) {
+		if ($node.ChildNodes.Count -ne $expectedCount) {
 
-	$errorMessage = [System.String]::Concat($errorMessage, " (", $additionalDetails, ")");
+			throw 'The specified xml element (' + $node.Name + ') doesn''t have the expected child elements (expected=' + $expectedCount + '; actual=' + (node.ChildNodes.Count) + ')!';
+		}
+	}
 
 }
-
-$errorMessage = [System.String]::Concat($errorMessage, "!");
-
-
-[String] $dialogResult = [System.Windows.Forms.MessageBox]::Show($errorMessage, "Error", 0, [System.Windows.Forms.MessageBoxIcon]::Error);

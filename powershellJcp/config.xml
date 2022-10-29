@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<classpath>
+		<file>./start.bat</file>
+		<variable>CLP</variable>
+		<remove>
+			<entry>%_propertiesPath%</entry>
+		</remove>
+	</classpath>
+	<classpath>
+		<file>./start2.bat</file>
+		<variable>CLP</variable>
+		<remove>
+			<entry>config</entry>
+			<entry>images</entry>
+			<entry>properties</entry>
+		</remove>
+	</classpath>	
+</config>
