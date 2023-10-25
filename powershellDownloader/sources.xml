@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A local configuration file which is used with the download script. -->
+<!-- The referenced files exist in various versions on the remote repository. -->
+<sources>
+	<source url="http://localhost/repository.xml">
+		<directory path=".">
+			<file name="archive.zip" unpack="yes" />
+		</directory>
+	</source>
+	<source url="http://localhost/repository.xml">
+		<directory path=".\manuals">
+			<file name="manual_en.txt" />
+		</directory>
+		<directory path=".\handbooks">
+			<file name="handbook_en.txt" />
+		</directory>
+	</source>
+	<source url="http://localhost/repository.xml">
+		<directory path=".\configurations">
+			<file name="settings.conf" />
+		</directory>
+	</source>
+</sources>

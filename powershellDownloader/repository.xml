@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A configuration file which is put in the remote repository in the document root directory. -->
+<!-- This file contains meta informations about the repository structure. -->
+<paths topic="archive versions" >
+	<pathElement name="environmentX">
+		<pathElement name="1.0">
+		<pathElement name="2.0">
+	</pathElement>
+	<pathElement name="environemntY">
+		<pathElement name="1.0">
+		<pathElement name="2.0" default="true">
+	</pathElement>
+</paths>
