@@ -1,7 +1,7 @@
 @rem
 @rem The MIT License (MIT)
 @rem
-@rem Copyright (c) 2014 Kristian Kutin
+@rem Copyright (c) 2024 Kristian Kutin
 @rem
 @rem Permission is hereby granted, free of charge, to any person obtaining a copy
 @rem of this software and associated documentation files (the "Software"), to deal
@@ -39,14 +39,15 @@
 
 call:defineMacros
 call:defineVariables
-call:changeConsoleTitle "Java Environment"
+call:changeConsoleTitle "Maven Environment"
 
 
-set subroutineCalls.length=4
+set subroutineCalls.length=5
 set subroutineCalls[1]=setJava
-set subroutineCalls[2]=printInfo
-set subroutineCalls[3]=checkEnvironment
-set subroutineCalls[4]=setPath
+set subroutineCalls[2]=setMaven
+set subroutineCalls[3]=printInfo
+set subroutineCalls[4]=checkEnvironment
+set subroutineCalls[5]=setPath
 
 
 for /L %%i in (1,1,%subroutineCalls.length%) do (
@@ -273,6 +274,36 @@ call:cleanVariables
 
 @rem --------------------------------------------------------------------------------
 @rem ---
+@rem ---   void setMaven()
+@rem ---
+@rem ---   The subroutine defines several environment variables for maven.
+@rem ---
+
+:setMaven
+
+	set "_settingsFile=%~dp0properties-maven.bat"
+
+	call:loadProperties "%_settingsFile%"
+	%ifError% (
+
+		%cprintln% Error^(%0^): Unable to load properties! >&2
+		%return% 2
+	)
+
+	call:addApplication MAVEN MAVEN_HOME MAVEN_EXE %MAVEN_VERSION%
+	%ifError% (
+
+		%cprintln% Error^(%0^): Unable to register application! >&2
+		%return% 2
+	)
+
+	set _settingsFile=
+
+%return%
+
+
+@rem --------------------------------------------------------------------------------
+@rem ---
 @rem ---   void setPath()
 @rem ---
 @rem ---   The path environment variable is modified.
@@ -287,6 +318,7 @@ call:cleanVariables
 	set NEW_PATH=C:\WINDOWS;%NEW_PATH%
 
 	set NEW_PATH=%JAVA_BIN%;%NEW_PATH%
+	set NEW_PATH=%MAVEN_BIN%;%NEW_PATH%
 	set NEW_PATH=.;%NEW_PATH%
 
 

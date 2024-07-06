@@ -39,6 +39,7 @@
 
 call:defineMacros
 call:defineVariables
+call:changeConsoleTitle "Groovy Environment"
 
 
 set subroutineCalls.length=5
@@ -57,9 +58,6 @@ for /L %%i in (1,1,%subroutineCalls.length%) do (
 		%return%
 	)
 )
-
-
-call:changeConsoleTitle "Sonar Environment"
 
 
 for /L %%i in (1,1,%subroutineCalls.length%) do (
@@ -320,6 +318,7 @@ call:cleanVariables
 	set NEW_PATH=C:\WINDOWS;%NEW_PATH%
 
 	set NEW_PATH=%JAVA_BIN%;%NEW_PATH%
+	set NEW_PATH=%GROOVY_BIN%;%NEW_PATH%
 	set NEW_PATH=.;%NEW_PATH%
 
 
